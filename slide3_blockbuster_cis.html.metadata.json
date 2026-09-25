@@ -1,0 +1,5 @@
+{
+  "summary": "Slide 3 of the Blockbuster Digital CIS presentation — an interactive two-column layout.\n\n**Left Column** displays four key CIS capabilities (Automates, Manages, Stores, Eliminates Bottlenecks) as hover-animated feature cards with icons, plus a color-coded flowchart legend.\n\n**Right Column** renders the complete VIP Rental Payment Flow as a responsive SVG flowchart replicating the exact node shapes, labels, and color scheme from the uploaded reference image:\n- Light blue ovals for START/END\n- Peach diamonds for decision points (inventory check, payment validation, delivery mode)\n- Rose pink rectangles for checkout/payment steps\n- Mint green rectangles for successful delivery/logging actions\n- Off-white/gray cards for exception paths (stock guarantee, error messages)\n\nInteractive features include:\n- Zoom in/out/reset controls\n- Hover tooltips on every node explaining the step\n- Staggered fade-in animation on load\n- Hover glow effects on nodes\n\nStyled with Tailwind CSS on a dark retro-tech #0A0E1A background with yellow (#FFD700) accents.",
+  "updatedAt": "2026-09-25T00:20:05.896054Z",
+  "userFacing": true
+}
