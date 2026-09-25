@@ -4,640 +4,1365 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blockbuster Digital CIS — Technical Pitch Presentation</title>
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0A0E1A; color: #F0F0F0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; overflow: hidden; height: 100vh; }
+  <link rel="icon" type="image/svg+xml" href="assets/blockbuster.svg">
 
-    /* ── CRT SCANLINES ── */
-    .crt { pointer-events:none; position:fixed; inset:0; z-index:60;
-      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.055) 2px,rgba(0,0,0,0.055) 4px); }
+  <!-- Google Fonts: Anton, Space Grotesk, Be Vietnam Pro (from Blockbuster Reference) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+
+  <style>
+    :root {
+      --font-anton: 'Anton', Impact, sans-serif;
+      --font-body: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+      --bb-yellow: #fecf00;
+      --bb-blue: #005899;
+      --bb-dark-blue: #001c37;
+      --bb-navy: #0b1326;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #080e1e;
+      color: #dae2fd;
+      font-family: var(--font-body);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .font-anton { font-family: var(--font-anton); letter-spacing: 0.03em; }
+    .font-body { font-family: var(--font-body); }
+    .font-mono-tech { font-family: var(--font-mono); }
+
+    /* ── HARD OFFSET SHADOWS (Signature Blockbuster Style) ── */
+    .shadow-hard-yellow { box-shadow: 4px 4px 0px 0px #fecf00; }
+    .shadow-hard-yellow-sm { box-shadow: 2px 2px 0px 0px #fecf00; }
+    .shadow-hard-blue { box-shadow: 4px 4px 0px 0px #005899; }
+    .shadow-hard-blue-sm { box-shadow: 2px 2px 0px 0px #005899; }
+    .shadow-hard-red { box-shadow: 4px 4px 0px 0px #b00009; }
+
+    /* ── CRT & VHS GLOW EFFECTS ── */
+    .crt-glow { text-shadow: 0 0 10px rgba(96, 165, 250, 0.65); }
+    .crt-glow-yellow { text-shadow: 0 0 12px rgba(254, 207, 0, 0.75); }
+    .crt-glow-red { text-shadow: 0 0 12px rgba(239, 68, 68, 0.75); }
+
+    /* ── CRT SCANLINES OVERLAY ── */
+    .scanlines-overlay {
+      position: fixed; inset: 0; z-index: 60; pointer-events: none;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+      background-size: 100% 4px;
+      transition: opacity 0.3s ease;
+    }
+    .scanlines-overlay.hidden-crt { opacity: 0; }
+
+    /* ── VHS PLASTIC BOX SHEEN ── */
+    .vhs-sheen {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.16) 0%,
+        rgba(255, 255, 255, 0.03) 40%,
+        rgba(0, 0, 0, 0.25) 60%,
+        rgba(255, 255, 255, 0.08) 100%
+      );
+    }
+
+    /* ── AUTHENTIC BARCODE SIMULATION ── */
+    .barcode-pattern {
+      background: repeating-linear-gradient(
+        90deg,
+        #fff,
+        #fff 2px,
+        #0b1326 2px,
+        #0b1326 4px,
+        #fff 4px,
+        #fff 7px,
+        #0b1326 7px,
+        #0b1326 8px,
+        #fff 8px,
+        #fff 11px,
+        #0b1326 11px,
+        #0b1326 14px
+      );
+    }
+
+    /* ── TICKET STUBS WITH GENUINE NOTCHES ── */
+    .ticket-stub {
+      position: relative;
+      clip-path: polygon(
+        0% 0%,
+        100% 0%,
+        100% calc(50% - 6px),
+        calc(100% - 6px) 50%,
+        100% calc(50% + 6px),
+        100% 100%,
+        0% 100%,
+        0% calc(50% + 6px),
+        6px 50%,
+        0% calc(50% - 6px)
+      );
+    }
+    .ticket-stub-lg {
+      position: relative;
+      clip-path: polygon(
+        0% 0%,
+        100% 0%,
+        100% calc(50% - 10px),
+        calc(100% - 10px) 50%,
+        100% calc(50% + 10px),
+        100% 100%,
+        0% 100%,
+        0% calc(50% + 10px),
+        10px 50%,
+        0% calc(50% - 10px)
+      );
+    }
 
     /* ── SLIDE ENGINE ── */
-    .slide { position:absolute; inset:0; opacity:0; transform:translateX(50px); transition:opacity .45s ease,transform .45s ease; pointer-events:none; overflow-y:auto; }
-    .slide.active { opacity:1; transform:translateX(0); pointer-events:auto; }
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateX(60px) scale(0.985);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
 
-    /* ── PALETTE SHORTCUTS ── */
-    .y   { color:#FFD100; }
-    .yb  { background:#FFD100; color:#0A0E1A; }
-    .blu { color:#60A5FA; }
-    .grn { color:#34D399; }
-    .red { color:#EF4444; }
+    /* ── RETRO CARD CONTAINERS ── */
+    .card-retro {
+      background: linear-gradient(145deg, #131b2e 0%, #0c1424 100%);
+      border: 1px solid #2d3852;
+      border-radius: 8px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .card-retro:hover {
+      border-color: #fecf00;
+      box-shadow: 4px 4px 0px 0px #005899;
+      transform: translateY(-2px);
+    }
+    .card-retro-alert {
+      background: linear-gradient(145deg, #241118 0%, #150910 100%);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 8px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .card-retro-alert:hover {
+      border-color: #ef4444;
+      box-shadow: 4px 4px 0px 0px #b00009;
+      transform: translateY(-2px);
+    }
 
-    /* ── CARD SHELLS ── */
-    .card { background:linear-gradient(145deg,#111827,#0F172A); border:1px solid rgba(96,165,250,.14); border-radius:14px; transition:border-color .25s,box-shadow .25s; }
-    .card:hover { border-color:rgba(255,209,0,.32); box-shadow:0 0 18px rgba(255,209,0,.05); }
-    .card-alert { background:linear-gradient(145deg,#1C1017,#150C12); border:1px solid rgba(239,68,68,.28); border-radius:14px; }
+    /* ── VOCAB & GRAMMAR BADGES ── */
+    .vtag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+      padding: 2.5px 7px; border-radius: 3px;
+      background: rgba(254, 207, 0, 0.12); color: #fecf00;
+      border: 1px solid rgba(254, 207, 0, 0.3);
+    }
+    .gtag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+      padding: 2.5px 7px; border-radius: 3px;
+      background: rgba(96, 165, 250, 0.12); color: #60a5fa;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+    }
 
-    /* ── VOCAB / GRAMMAR TAGS ── */
-    .vtag { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; letter-spacing:.06em;
-      padding:3px 10px; border-radius:6px; background:rgba(255,209,0,.1); color:#FFD100; border:1px solid rgba(255,209,0,.22); }
-    .gtag { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; letter-spacing:.06em;
-      padding:3px 10px; border-radius:6px; background:rgba(96,165,250,.1); color:#60A5FA; border:1px solid rgba(96,165,250,.22); }
+    /* ── VIP MEMBER / PRESENTER BADGE (Laminated Blockbuster Gold Pass) ── */
+    .vip-card-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, #1b2640 0%, #002244 100%);
+      border: 1.5px solid #fecf00;
+      border-radius: 6px;
+      padding: 5px 12px;
+      box-shadow: 3px 3px 0px 0px #fecf00;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .vip-card-badge:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px 0px #fecf00;
+    }
 
-    /* ── PRESENTER BADGE ── */
-    .badge { background:linear-gradient(135deg,rgba(255,209,0,.11),rgba(255,209,0,.03));
-      border:1px solid rgba(255,209,0,.24); border-radius:999px; padding:5px 16px; font-size:11.5px; font-weight:600; letter-spacing:.04em; }
-
-    /* ── FEATURE PILL (Slide 3 left) ── */
-    .fpill { background:linear-gradient(135deg,rgba(255,209,0,.06),rgba(255,209,0,.015));
-      border:1px solid rgba(255,209,0,.14); border-radius:11px; padding:14px 16px; transition:all .25s; }
-    .fpill:hover { border-color:rgba(255,209,0,.38); transform:translateY(-2px); box-shadow:0 6px 18px rgba(255,209,0,.06); }
+    /* ── FEATURE PILL (Slide 3) ── */
+    .fpill-retro {
+      background: linear-gradient(135deg, #131d33 0%, #0e1628 100%);
+      border: 1px solid #23314d;
+      border-left: 3px solid #fecf00;
+      border-radius: 6px;
+      padding: 8px 12px;
+      transition: all 0.22s ease;
+    }
+    .fpill-retro:hover {
+      border-color: #fecf00;
+      border-left-width: 5px;
+      transform: translateX(3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
 
     /* ── IMPACT CARD (Slide 4) ── */
-    .icard { background:linear-gradient(145deg,#111827,#0D1220); border:1px solid rgba(96,165,250,.16); border-radius:15px;
-      padding:26px 22px; transition:all .28s; }
-    .icard:hover { border-color:rgba(255,209,0,.38); transform:translateY(-3px); box-shadow:0 10px 28px rgba(255,209,0,.07); }
+    .icard-retro {
+      background: linear-gradient(145deg, #131b2e 0%, #0b1222 100%);
+      border: 1px solid #243048;
+      border-radius: 8px;
+      padding: 18px 18px;
+      transition: all 0.25s ease;
+    }
+    .icard-retro:hover {
+      transform: translateY(-3px);
+    }
 
-    /* ── NAV ── */
-    .nbtn { background:rgba(255,209,0,.09); border:1px solid rgba(255,209,0,.28); color:#FFD100; border-radius:10px;
-      padding:9px 22px; font-weight:700; font-size:12.5px; cursor:pointer; transition:all .22s; letter-spacing:.04em; }
-    .nbtn:hover:not(:disabled) { background:#FFD100; color:#0A0E1A; box-shadow:0 0 16px rgba(255,209,0,.22); }
-    .nbtn:disabled { opacity:.28; cursor:not-allowed; }
-    .dot { width:10px; height:10px; border-radius:50%; background:rgba(255,209,0,.18); border:1px solid rgba(255,209,0,.28); transition:all .25s; cursor:pointer; }
-    .dot.on { background:#FFD100; box-shadow:0 0 8px rgba(255,209,0,.38); transform:scale(1.3); }
+    /* ── VCR TRANSPORT BUTTONS ── */
+    .vcr-btn {
+      background: #172138;
+      border: 1.5px solid #005899;
+      color: #dae2fd;
+      font-family: var(--font-anton);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      padding: 6px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.15s ease;
+      box-shadow: 2px 2px 0px 0px #005899;
+    }
+    .vcr-btn:hover:not(:disabled) {
+      background: #fecf00;
+      color: #001c37;
+      border-color: #fecf00;
+      box-shadow: 3px 3px 0px 0px #005899;
+      transform: translate(-1px, -1px);
+    }
+    .vcr-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .vcr-btn:active:not(:disabled) {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0px 0px #005899;
+    }
 
-    /* ── FLOWCHART ── */
-    .n-oval { fill:#B8D4E8; stroke:#7BA7C7; stroke-width:1.5; }
-    .n-dia  { fill:#F5D5B0; stroke:#D4A86A; stroke-width:1.5; }
-    .n-pink { fill:#F0C0C8; stroke:#D09098; stroke-width:1.5; }
-    .n-grn  { fill:#B8E8D0; stroke:#80C8A0; stroke-width:1.5; }
-    .n-gray { fill:#E8E4DC; stroke:#C8C0B4; stroke-width:1.5; }
-    .n-def  { fill:#F5F0E8; stroke:#D4CFC4; stroke-width:1.5; }
-    .ft  { font-family:'Segoe UI',sans-serif; font-size:10.5px; fill:#1E1E1E; text-anchor:middle; dominant-baseline:central; }
-    .fts { font-family:'Segoe UI',sans-serif; font-size:9.2px;  fill:#1E1E1E; text-anchor:middle; dominant-baseline:central; }
-    .fe  { stroke:#8892A8; stroke-width:1.6; fill:none; marker-end:url(#a); }
-    .fl  { font-family:'Segoe UI',sans-serif; font-size:9px; fill:#A0A8B8; text-anchor:middle; }
-    .fn  { cursor:pointer; transition:filter .22s; }
-    .fn:hover { filter:drop-shadow(0 0 7px rgba(255,209,0,.4)); }
+    /* ── SLIDE TRACK INDICATOR PUNCH ── */
+    .track-btn {
+      background: #0f172a;
+      border: 1px solid #253350;
+      color: #7d8ea8;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .track-btn:hover {
+      border-color: #fecf00;
+      color: #fecf00;
+    }
+    .track-btn.active {
+      background: #005899;
+      border-color: #fecf00;
+      color: #fecf00;
+      box-shadow: 2px 2px 0px 0px #fecf00;
+    }
 
-    /* ── TOOLTIP ── */
-    #tip { position:fixed; background:#151B2E; border:1px solid rgba(255,209,0,.28); border-radius:7px;
-      padding:7px 13px; font-size:11px; color:#D8D8E0; pointer-events:none; opacity:0; transition:opacity .16s;
-      max-width:200px; z-index:80; box-shadow:0 5px 16px rgba(0,0,0,.45); }
-    #tip.v { opacity:1; }
+    /* ── FLOWCHART RETRO POS TERMINAL STYLES ── */
+    .terminal-bezel {
+      background: #060c18;
+      border: 2px solid #005899;
+      border-radius: 10px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 88, 153, 0.3);
+      position: relative;
+    }
+    .fe { stroke: #4d648d; stroke-width: 1.8; fill: none; marker-end: url(#arrow-marker); }
+    .fl { font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; fill: #fecf00; text-anchor: middle; }
+    .ft { font-family: var(--font-body); font-size: 11px; font-weight: 700; fill: #0b1326; text-anchor: middle; dominant-baseline: central; }
+    .fts { font-family: var(--font-body); font-size: 9.5px; font-weight: 600; fill: #0b1326; text-anchor: middle; dominant-baseline: central; }
+    .fn { cursor: pointer; transition: filter 0.2s ease, transform 0.2s ease; }
+    .fn:hover { filter: drop-shadow(0 0 8px #fecf00); }
+
+    /* Node Color Categories */
+    .n-oval { fill: #8cc4ff; stroke: #2b7bc4; stroke-width: 2; }
+    .n-dia  { fill: #ffd86b; stroke: #c99818; stroke-width: 2; }
+    .n-pink { fill: #ff9fb4; stroke: #c9516c; stroke-width: 2; }
+    .n-grn  { fill: #72e4ab; stroke: #24995f; stroke-width: 2; }
+    .n-gray { fill: #d3d9e2; stroke: #8392a5; stroke-width: 2; }
+    .n-def  { fill: #f5f0e8; stroke: #c7bca9; stroke-width: 2; }
+
+    /* ── RECEIPT SCAN TOOLTIP ── */
+    #tip {
+      position: fixed;
+      background: #001c37;
+      border: 1.5px solid #fecf00;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #f0f4ff;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      max-width: 230px;
+      z-index: 90;
+      box-shadow: 4px 4px 0px 0px #005899;
+    }
+    #tip.v { opacity: 1; }
 
     /* ── SCROLLBAR ── */
-    ::-webkit-scrollbar { width:5px; }
-    ::-webkit-scrollbar-track { background:transparent; }
-    ::-webkit-scrollbar-thumb { background:rgba(255,209,0,.18); border-radius:3px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070d1a; }
+    ::-webkit-scrollbar-thumb { background: #005899; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #fecf00; }
   </style>
 </head>
-<body>
-<div class="crt"></div>
+<body class="selection:bg-[#fecf00] selection:text-[#001c37] flex flex-col h-screen overflow-hidden">
 
-<!-- ══════════════ TOP BAR ══════════════ -->
-<header class="fixed top-0 inset-x-0 z-40 flex items-center justify-between px-5 py-2.5"
-  style="background:linear-gradient(180deg,#0A0E1A 65%,transparent);">
-  <div class="flex items-center gap-2.5">
-    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-extrabold text-sm"
-      style="background:linear-gradient(135deg,#FFD100,#E6B800);color:#0A0E1A;box-shadow:0 2px 10px rgba(255,209,0,.22);">B</div>
-    <div>
-      <div class="text-[13px] font-bold tracking-tight y">BLOCKBUSTER DIGITAL</div>
-      <div class="text-[9px] tracking-[.2em]" style="color:rgba(255,209,0,.4);">TECHNICAL PITCH · SOFTWARE SOLUTION FOR BUSINESS</div>
+  <!-- ══════════════ IMMERSIVE VIDEO STORE BACKGROUND ══════════════ -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div
+      class="absolute inset-0 bg-cover bg-center opacity-15 filter blur-[2px] scale-105"
+      style="background-image: url('assets/shelves_bg.jpg');">
     </div>
-  </div>
-  <div id="ind" class="text-[11px] font-semibold tracking-widest" style="color:rgba(255,209,0,.45);">SLIDE 1 / 4</div>
-</header>
-
-<!-- ══════════════ SLIDES ══════════════ -->
-<main class="relative w-full h-full pt-12 pb-14">
-
-<!-- ═══════════════════ SLIDE 1 · COMPANY PROFILE ═══════════════════ -->
-<section id="s1" class="slide active">
-<div class="px-5 md:px-10 py-5 flex flex-col gap-4 h-full">
-
-  <!-- Header -->
-  <div>
-    <div class="flex items-center gap-2 mb-0.5">
-      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold"
-        style="background:rgba(255,209,0,.13);color:#FFD100;border:1px solid rgba(255,209,0,.28);">1</span>
-      <span class="text-[10px] font-bold tracking-[.18em]" style="color:rgba(255,209,0,.5);">1.1.1 · COMPANY PROFILE</span>
-    </div>
-    <h2 class="text-[22px] md:text-[28px] font-extrabold tracking-tight text-white leading-tight">
-      Technical Pitch: <span class="y">Software Solution for Business</span>
-    </h2>
-    <p class="text-xs mt-1" style="color:rgba(200,200,210,.55);">Blockbuster Digital CIS &amp; Streaming Platform</p>
+    <div class="absolute inset-0 bg-gradient-to-b from-[#080e1e]/90 via-[#080e1e]/80 to-[#080e1e]/95"></div>
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fecf00_1px,transparent_1px)] [background-size:24px_24px]"></div>
   </div>
 
-  <!-- Team & Software Name -->
-  <div class="flex flex-wrap gap-3">
-    <div class="card px-4 py-3 flex items-center gap-2">
-      <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#60A5FA" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="#60A5FA" stroke-width="2"/></svg>
-      <span class="text-[11px]" style="color:rgba(200,200,210,.7);">
-        <span class="text-white font-semibold">Team:</span>
-        M. F. Huertas · J. C. Valencia · J. S. Murillo · V. Becerra
+  <!-- ══════════════ CRT SCANLINES OVERLAY (Toggleable) ══════════════ -->
+  <div id="crtOverlay" class="scanlines-overlay"></div>
+
+  <!-- ══════════════ TOP MARQUEE TICKER ══════════════ -->
+  <aside class="relative z-50 bg-[#005899] text-[#fecf00] px-4 py-1 text-[11px] font-mono-tech border-b border-[#00325a] flex items-center justify-between overflow-hidden shadow-md flex-shrink-0">
+    <div class="flex items-center gap-3 animate-pulse">
+      <span class="bg-[#fecf00] text-[#001c37] font-anton px-1.5 py-0.5 rounded-xs text-[10px] tracking-wide">
+        NOW SHOWING
+      </span>
+      <span class="font-semibold tracking-wider uppercase">
+        BLOCKBUSTER DIGITAL CIS • TECHNICAL PITCH: SOFTWARE SOLUTION FOR BUSINESS • BE KIND, PLEASE REWIND
       </span>
     </div>
-    <div class="card px-4 py-3 flex items-center gap-2">
-      <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke="#FFD100" stroke-width="2"/><path d="M8 21h8m-4-4v4" stroke="#FFD100" stroke-width="2" stroke-linecap="round"/></svg>
-      <span class="text-[11px]" style="color:rgba(200,200,210,.7);">
-        <span class="y font-semibold">Software:</span> Blockbuster Digital CIS
-      </span>
+    <div class="hidden md:flex items-center gap-4 text-[#dae2fd] text-[10px]">
+      <span>STORE #9401 • DALLAS, TX</span>
+      <span class="text-[#fecf00] font-bold">★ OPEN 10AM - MIDNIGHT</span>
     </div>
-    <div class="card px-4 py-3 flex items-center gap-2">
-      <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M3 21h18M3 7v14m18-14v14M6 7h12M9 21V10m6 11V10M5 7l7-4 7 4" stroke="#34D399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="text-[11px]" style="color:rgba(200,200,210,.7);">
-        <span class="grn font-semibold">Target Company:</span> Blockbuster Video
-      </span>
-    </div>
-  </div>
+  </aside>
 
-  <!-- Content Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
-    <!-- Core Activity -->
-    <div class="card p-5">
-      <div class="flex items-center gap-2 mb-2.5">
-        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(255,209,0,.1);">
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 13L2 10l10 5 10-5" stroke="#FFD100" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <h3 class="text-xs font-bold y">Core Activity</h3>
-      </div>
-      <p class="text-[13px] leading-relaxed" style="color:rgba(220,220,230,.78);">
-        Blockbuster Video is a company located in <span class="text-white font-semibold">Dallas, TX</span> that operates in the <span class="y font-semibold">Entertainment Technology</span> and <span class="y font-semibold">Media Distribution</span> sector.
-      </p>
-    </div>
-    <!-- Services Offered -->
-    <div class="card p-5">
-      <div class="flex items-center gap-2 mb-2.5">
-        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(96,165,250,.1);">
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M4 7v10c0 1.1.9 2 2 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H6a2 2 0 00-2 2z" stroke="#60A5FA" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <h3 class="text-xs font-bold blu">Services Offered</h3>
-      </div>
-      <p class="text-[13px] leading-relaxed" style="color:rgba(220,220,230,.78);">
-        The company provides <span class="text-white font-semibold">physical media rentals</span>, <span class="text-white font-semibold">digital scanning</span>, and <span class="y font-semibold">4K cloud streaming</span> services to film lovers and subscribers worldwide.
-      </p>
-    </div>
-    <!-- Stakeholder Needs -->
-    <div class="card p-5 md:col-span-2">
-      <div class="flex items-center gap-2 mb-2.5">
-        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(52,211,153,.1);">
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2m22-4l-5.26 4-2.74-2M9 7a4 4 0 100-8 4 4 0 000 8z" stroke="#34D399" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </div>
-        <h3 class="text-xs font-bold grn">Stakeholder Needs</h3>
-        <span class="vtag ml-auto">VOCAB: Stakeholder Needs Analysis</span>
-      </div>
-      <p class="text-[13px] leading-relaxed" style="color:rgba(220,220,230,.78);">
-        Aligning <span class="text-white font-semibold">legacy rental operations</span> with modern <span class="grn font-semibold">digital subscriber demands</span> — bridging in-store VHS/DVD services and next-generation 4K cloud streaming experiences for a global audience.
-      </p>
-    </div>
-  </div>
-
-  <!-- Presenter -->
-  <div class="flex justify-end">
-    <div class="badge flex items-center gap-1.5">
-      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" stroke="#FFD100" stroke-width="2" stroke-linecap="round"/></svg>
-      <span class="y">Maria Fernanda Huertas Montes</span>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- ═══════════════════ SLIDE 2 · PROBLEM STATEMENT ═══════════════════ -->
-<section id="s2" class="slide">
-<div class="px-5 md:px-10 py-5 flex flex-col gap-4 h-full">
-
-  <!-- Header -->
-  <div>
-    <div class="flex items-center gap-2 mb-0.5">
-      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold"
-        style="background:rgba(255,209,0,.13);color:#FFD100;border:1px solid rgba(255,209,0,.28);">2</span>
-      <span class="text-[10px] font-bold tracking-[.18em]" style="color:rgba(255,209,0,.5);">1.1.2 · PROBLEM STATEMENT & REQUIREMENTS REFINEMENT</span>
-    </div>
-    <h2 class="text-[22px] md:text-[28px] font-extrabold tracking-tight text-white">
-      Identifying the <span class="y">Core Challenges</span>
-    </h2>
-  </div>
-
-  <!-- Content -->
-  <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 flex-1">
-    <!-- Business Issues Alert -->
-    <div class="lg:col-span-2 card-alert p-5 flex flex-col">
-      <div class="flex items-center gap-2 mb-3">
-        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(239,68,68,.14);">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4m0 4h.01" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <h3 class="text-xs font-bold red">Business Issues</h3>
-      </div>
-      <p class="text-[13px] leading-relaxed flex-1" style="color:rgba(220,220,230,.78);">
-        Despite its market presence, the company faces <span class="text-white font-semibold">critical operational problems</span>.
-        For instance, it suffers from <span class="red font-semibold">inventory tracking delays</span> and
-        <span class="red font-semibold">manual tape management errors</span>.
-      </p>
-      <div class="flex flex-wrap gap-1.5 mt-3">
-        <span class="vtag" style="background:rgba(239,68,68,.1);color:#EF4444;border-color:rgba(239,68,68,.2);">⚠ CRITICAL</span>
-      </div>
-    </div>
-
-    <!-- Requirements Refinement -->
-    <div class="lg:col-span-3 flex flex-col gap-3">
-      <!-- Need 1 -->
-      <div class="card p-4 flex-1">
-        <div class="flex items-center gap-2 mb-2 flex-wrap">
-          <span class="inline-flex items-center justify-center w-5 h-5 rounded text-[9px] font-bold yb">N1</span>
-          <h4 class="text-[11px] font-bold tracking-wider y">BOTTLENECK</h4>
-          <div class="flex gap-1.5 ml-auto flex-wrap">
-            <span class="gtag">GRAMMAR: 'lacks'</span>
-            <span class="vtag">Epic</span>
-            <span class="vtag">User Story</span>
-            <span class="vtag">Bottleneck</span>
-          </div>
-        </div>
-        <p class="text-[13px] leading-relaxed" style="color:rgba(220,220,230,.78);">
-          First, the system <span class="blu font-semibold">lacks</span> automated <span class="text-white font-semibold">inventory & streaming synchronization</span>.
-        </p>
-      </div>
-      <!-- Need 2 -->
-      <div class="card p-4 flex-1">
-        <div class="flex items-center gap-2 mb-2 flex-wrap">
-          <span class="inline-flex items-center justify-center w-5 h-5 rounded text-[9px] font-bold" style="background:#60A5FA;color:#0A0E1A;">N2</span>
-          <h4 class="text-[11px] font-bold tracking-wider blu">WORKFLOW</h4>
-          <div class="flex gap-1.5 ml-auto flex-wrap">
-            <span class="gtag">GRAMMAR: 'requires'</span>
-            <span class="vtag">Workflow</span>
-          </div>
-        </div>
-        <p class="text-[13px] leading-relaxed" style="color:rgba(220,220,230,.78);">
-          Second, the workflow <span class="blu font-semibold">requires</span> <span class="text-white font-semibold">real-time barcode processing</span> and digital reservation controls.
-        </p>
-      </div>
-      <!-- Need 3 -->
-      <div class="card p-4 flex-1">
-        <div class="flex items-center gap-2 mb-2 flex-wrap">
-          <span class="inline-flex items-center justify-center w-5 h-5 rounded text-[9px] font-bold" style="background:#34D399;color:#0A0E1A;">N3</span>
-          <h4 class="text-[11px] font-bold tracking-wider grn">CIS ARCHITECTURE</h4>
-          <div class="flex gap-1.5 ml-auto flex-wrap">
-            <span class="vtag">CIS</span>
-            <span class="vtag">Functional Req.</span>
-            <span class="vtag">Non-Functional Req.</span>
-          </div>
-        </div>
-        <p class="text-[13px] leading-relaxed" style="color:rgba(220,220,230,.78);">
-          Finally, the organization <span class="grn font-semibold">needs</span> a centralized <span class="y font-semibold">Customer Information System (CIS)</span>.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Presenter -->
-  <div class="flex justify-end">
-    <div class="badge flex items-center gap-1.5">
-      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" stroke="#FFD100" stroke-width="2" stroke-linecap="round"/></svg>
-      <span class="y">Juan Camilo Valencia Rey</span>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- ═══════════════════ SLIDE 3 · PROPOSED SOLUTION & FLOWCHART ═══════════════════ -->
-<section id="s3" class="slide">
-<div class="px-5 md:px-10 py-4 flex flex-col gap-3 h-full">
-
-  <!-- Header -->
-  <div>
-    <div class="flex items-center gap-2 mb-0.5">
-      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold"
-        style="background:rgba(255,209,0,.13);color:#FFD100;border:1px solid rgba(255,209,0,.28);">3</span>
-      <span class="text-[10px] font-bold tracking-[.18em]" style="color:rgba(255,209,0,.5);">1.1.3 · PROPOSED SOLUTION & CIS WORKFLOW</span>
-    </div>
-    <h2 class="text-[20px] md:text-[24px] font-extrabold tracking-tight text-white">
-      VIP Rental <span class="y">Payment Flow</span>
-    </h2>
-  </div>
-
-  <!-- 2-Col Grid -->
-  <div class="flex flex-col lg:flex-row gap-3 flex-1 min-h-0">
-
-    <!-- LEFT 35% -->
-    <div class="w-full lg:w-[34%] flex flex-col gap-2.5 flex-shrink-0 overflow-y-auto pr-1">
-
-      <!-- Introduction -->
-      <div class="card p-4">
-        <h4 class="text-[10px] font-bold tracking-[.16em] y mb-1.5">SOFTWARE INTRODUCTION</h4>
-        <p class="text-[12px] leading-relaxed" style="color:rgba(220,220,230,.75);">
-          To address these core needs, we present our software solution: <span class="y font-bold">Blockbuster Digital CIS</span>.
-        </p>
-      </div>
-
-      <!-- CIS Architecture -->
-      <div class="card p-4">
-        <h4 class="text-[10px] font-bold tracking-[.16em] blu mb-1.5">CIS ARCHITECTURE</h4>
-        <p class="text-[12px] leading-relaxed" style="color:rgba(220,220,230,.75);">
-          Our <span class="text-white font-semibold">Customer Information System (CIS)</span> centralizes all operational data. It processes streaming video pipelines, rental cart transactions, and customer profiles in <span class="y font-semibold">real time</span>.
-        </p>
-      </div>
-
-      <!-- Key Features -->
-      <div class="flex flex-col gap-2">
-        <h4 class="text-[10px] font-bold tracking-[.16em]" style="color:rgba(255,209,0,.5);">KEY FEATURES</h4>
-
-        <div class="fpill">
-          <div class="flex items-start gap-2.5">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(255,209,0,.1);">
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#FFD100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <h5 class="text-[11px] font-bold y">Automates</h5>
-              <p class="text-[11px] mt-0.5 leading-relaxed" style="color:rgba(200,200,210,.68);">Cart checkout processing and printable receipt ticket generation.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="fpill">
-          <div class="flex items-start gap-2.5">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(96,165,250,.1);">
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M4 7v10c0 1.1.9 2 2 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H6a2 2 0 00-2 2z" stroke="#60A5FA" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <h5 class="text-[11px] font-bold blu">Manages</h5>
-              <p class="text-[11px] mt-0.5 leading-relaxed" style="color:rgba(200,200,210,.68);">Hybrid physical-cloud catalogs and VIP membership passes.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="fpill">
-          <div class="flex items-start gap-2.5">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(52,211,153,.1);">
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 0v10l6.93 4" stroke="#34D399" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <h5 class="text-[11px] font-bold grn">Stores</h5>
-              <p class="text-[11px] mt-0.5 leading-relaxed" style="color:rgba(200,200,210,.68);">Customer rental history, reward points, and tape availability data.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Best Option -->
-      <div class="fpill" style="border-color:rgba(255,209,0,.28);background:linear-gradient(135deg,rgba(255,209,0,.1),rgba(255,209,0,.025));">
-        <div class="flex items-start gap-2.5">
-          <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(255,209,0,.14);">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m7 14l5-5-5-5m5 5H9" stroke="#FFD100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div>
-            <h5 class="text-[11px] font-bold y">Why Best Option</h5>
-            <p class="text-[11px] mt-0.5 leading-relaxed" style="color:rgba(200,200,210,.68);">This software directly <span class="y font-semibold">eliminates rental bottlenecks</span> and optimizes overall team efficiency.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Legend -->
-      <div class="mt-auto pt-1">
-        <h4 class="text-[9px] font-bold tracking-[.16em] mb-1.5" style="color:rgba(255,209,0,.35);">LEGEND</h4>
-        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[9.5px]">
-          <div class="flex items-center gap-1.5"><span class="w-3 h-2 rounded-full" style="background:#B8D4E8;border:1px solid #7BA7C7;"></span><span style="color:rgba(180,180,195,.6);">Start / End</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-3 h-2 rounded-sm" style="background:#F5D5B0;border:1px solid #D4A86A;transform:rotate(45deg);"></span><span style="color:rgba(180,180,195,.6);">Decision</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-3 h-2 rounded-sm" style="background:#F0C0C8;border:1px solid #D09098;"></span><span style="color:rgba(180,180,195,.6);">Payment</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-3 h-2 rounded-sm" style="background:#B8E8D0;border:1px solid #80C8A0;"></span><span style="color:rgba(180,180,195,.6);">Success</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-3 h-2 rounded-sm" style="background:#E8E4DC;border:1px solid #C8C0B4;"></span><span style="color:rgba(180,180,195,.6);">Exception</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-3 h-2 rounded-sm" style="background:#F5F0E8;border:1px solid #D4CFC4;"></span><span style="color:rgba(180,180,195,.6);">User Action</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT 65%: FLOWCHART -->
-    <div class="flex-1 rounded-xl overflow-hidden min-h-0 flex flex-col" style="background:linear-gradient(180deg,#0E1224,#0A0E1A);border:1px solid rgba(96,165,250,.1);">
-      <div class="px-3 py-2 flex items-center justify-between flex-shrink-0" style="border-bottom:1px solid rgba(96,165,250,.08);">
-        <span class="text-[9px] font-bold tracking-[.16em]" style="color:rgba(255,209,0,.4);">VIP RENTAL PAYMENT FLOW</span>
-        <div class="flex gap-1">
-          <button onclick="zc(.15)" class="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold" style="background:rgba(255,209,0,.07);color:#FFD100;border:1px solid rgba(255,209,0,.18);">+</button>
-          <button onclick="zc(-.15)" class="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold" style="background:rgba(255,209,0,.07);color:#FFD100;border:1px solid rgba(255,209,0,.18);">−</button>
-          <button onclick="rc()" class="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold" style="background:rgba(255,209,0,.07);color:#FFD100;border:1px solid rgba(255,209,0,.18);">⟲</button>
-        </div>
-      </div>
-      <div class="overflow-auto flex-1 p-2.5">
-        <div id="cz" style="transform-origin:top center;transition:transform .3s ease;">
-          <svg viewBox="0 0 680 1060" width="100%" xmlns="http://www.w3.org/2000/svg">
-            <defs><marker id="a" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" fill="#8892A8"><polygon points="0 0,8 3,0 6"/></marker></defs>
-
-            <!-- ── EDGES ── -->
-            <line x1="265" y1="48"  x2="265" y2="72"  class="fe"/>
-            <line x1="265" y1="112" x2="265" y2="140" class="fe"/>
-            <line x1="265" y1="180" x2="265" y2="215" class="fe"/>
-            <!-- YES -->
-            <line x1="205" y1="265" x2="168" y2="265" class="fe"/>
-            <line x1="168" y1="265" x2="168" y2="310" class="fe"/>
-            <text x="180" y="288" class="fl">YES</text>
-            <!-- NO -->
-            <line x1="325" y1="265" x2="488" y2="265" class="fe"/>
-            <text x="400" y="255" class="fl">NO</text>
-            <line x1="488" y1="308" x2="488" y2="340" class="fe"/>
-            <line x1="488" y1="392" x2="488" y2="424" class="fe"/>
-            <!-- Cart → Pay -->
-            <line x1="168" y1="356" x2="168" y2="390" class="fe"/>
-            <!-- Pay → Valid? -->
-            <line x1="168" y1="440" x2="168" y2="475" class="fe"/>
-            <!-- YES receipt -->
-            <line x1="228" y1="525" x2="295" y2="525" class="fe"/>
-            <line x1="295" y1="525" x2="295" y2="562" class="fe"/>
-            <text x="258" y="515" class="fl">YES</text>
-            <!-- NO error -->
-            <line x1="108" y1="525" x2="58"  y2="525" class="fe"/>
-            <line x1="58"  y1="525" x2="58"  y2="570" class="fe"/>
-            <text x="82"  y="515" class="fl">NO</text>
-            <line x1="58"  y1="618" x2="58"  y2="650" class="fe"/>
-            <!-- Receipt → Delivery -->
-            <line x1="295" y1="607" x2="295" y2="640" class="fe"/>
-            <!-- PHYSICAL -->
-            <line x1="235" y1="690" x2="140" y2="690" class="fe"/>
-            <line x1="140" y1="690" x2="140" y2="730" class="fe"/>
-            <text x="180" y="705" class="fl">PHYSICAL</text>
-            <!-- STREAMING -->
-            <line x1="355" y1="690" x2="450" y2="690" class="fe"/>
-            <line x1="450" y1="690" x2="450" y2="730" class="fe"/>
-            <text x="400" y="705" class="fl">STREAMING</text>
-            <!-- Merge → Log -->
-            <line x1="140" y1="782" x2="140" y2="820" class="fe"/>
-            <line x1="140" y1="820" x2="295" y2="820" class="fe"/>
-            <line x1="295" y1="820" x2="295" y2="845" class="fe"/>
-            <line x1="450" y1="782" x2="450" y2="820" class="fe"/>
-            <line x1="450" y1="820" x2="296" y2="820" class="fe"/>
-            <!-- Log → END -->
-            <line x1="295" y1="910" x2="295" y2="948" class="fe"/>
-
-            <!-- ── NODES ── -->
-            <g class="fn" data-tip="Customer journey begins"><ellipse cx="265" cy="32" rx="56" ry="18" class="n-oval"/><text x="265" y="32" class="ft" style="font-weight:700;">START</text></g>
-            <g class="fn" data-tip="Customer opens Blockbuster Digital web or mobile app"><rect x="190" y="74" width="150" height="38" rx="6" class="n-def"/><text x="265" y="88" class="fts">User accesses</text><text x="265" y="101" class="fts">platform</text></g>
-            <g class="fn" data-tip="Browse and select a title — VHS tape or digital stream"><rect x="185" y="142" width="160" height="38" rx="6" class="n-def"/><text x="265" y="156" class="fts">Selects movie:</text><text x="265" y="169" class="fts">VHS Tape or Digital</text></g>
-            <g class="fn" data-tip="CIS queries real-time inventory for item availability"><polygon points="265,215 325,265 265,315 205,265" class="n-dia"/><text x="265" y="256" class="fts">Is selected item</text><text x="265" y="268" class="fts">available in real-</text><text x="265" y="280" class="fts">time inventory?</text></g>
-            <g class="fn" data-tip="Item reserved and added to the customer's rental cart"><rect x="98" y="310" width="140" height="46" rx="6" class="n-pink"/><text x="168" y="329" class="fts">Add product to</text><text x="168" y="342" class="fts">Rental Cart</text></g>
-            <g class="fn" data-tip="Payment gateway processes transaction; VIP discounts applied automatically"><rect x="98" y="390" width="140" height="50" rx="6" class="n-pink"/><text x="168" y="407" class="fts">Process</text><text x="168" y="419" class="fts">Payment /</text><text x="168" y="431" class="fts">Validate VIP Pass</text></g>
-            <g class="fn" data-tip="Validates payment method and VIP pass credentials"><polygon points="168,475 228,525 168,575 108,525" class="n-dia"/><text x="168" y="517" class="fts">Is Payment /</text><text x="168" y="530" class="fts">VIP Pass valid?</text></g>
-            <g class="fn" data-tip="Error displayed; customer prompted for alternative payment method"><rect x="-6" y="570" width="128" height="48" rx="6" class="n-gray"/><text x="58" y="586" class="fts">Display payment</text><text x="58" y="598" class="fts">error & Suggest</text><text x="58" y="610" class="fts">new method</text></g>
-            <g class="fn" data-tip="Transaction cancelled — customer may retry"><ellipse cx="58" cy="668" rx="40" ry="16" class="n-oval"/><text x="58" y="668" class="ft" style="font-weight:700;">END</text></g>
-            <g class="fn" data-tip="Digital or printable receipt with VIP discount summary"><rect x="228" y="562" width="134" height="45" rx="6" class="n-grn"/><text x="295" y="580" class="fts">Generate</text><text x="295" y="593" class="fts">printable receipt</text></g>
-            <g class="fn" data-tip="Customer chooses physical tape delivery or 4K cloud streaming"><polygon points="295,640 355,690 295,740 235,690" class="n-dia"/><text x="295" y="681" class="fts">Selects:</text><text x="295" y="693" class="fts">Streaming or</text><text x="295" y="705" class="fts">Physical Tape?</text></g>
-            <g class="fn" data-tip="Unique barcode generated for dispatch tracking or in-store pickup"><rect x="68" y="730" width="144" height="52" rx="6" class="n-grn"/><text x="140" y="748" class="fts">Assign unique</text><text x="140" y="761" class="fts">barcode for</text><text x="140" y="774" class="fts">dispatch / Store pickup</text></g>
-            <g class="fn" data-tip="4K cloud streaming CDN pipeline activated for instant playback"><rect x="384" y="730" width="132" height="52" rx="6" class="n-grn"/><text x="450" y="748" class="fts">Enable 4K Cloud</text><text x="450" y="761" class="fts">Streaming CDN</text><text x="450" y="774" class="fts">Pipeline</text></g>
-            <g class="fn" data-tip="Full transaction logged in CIS; Gold Membership loyalty points awarded"><rect x="220" y="845" width="150" height="65" rx="6" class="n-grn"/><text x="295" y="862" class="fts">Log transaction</text><text x="295" y="875" class="fts">in CIS & grant</text><text x="295" y="888" class="fts" style="font-weight:700;">Gold Membership</text><text x="295" y="901" class="fts">points</text></g>
-            <g class="fn" data-tip="Transaction complete — rental fulfilled successfully!"><ellipse cx="295" cy="966" rx="48" ry="18" class="n-oval"/><text x="295" y="966" class="ft" style="font-weight:700;">END</text></g>
-            <!-- Right branch -->
-            <g class="fn" data-tip="Out-of-stock: CIS auto-issues a free rental coupon"><rect x="424" y="244" width="128" height="64" rx="6" class="n-gray"/><text x="488" y="262" class="fts">Apply Stock</text><text x="488" y="274" class="fts">Guarantee:</text><text x="488" y="286" class="fts">Issue free</text><text x="488" y="298" class="fts">rental coupon</text></g>
-            <g class="fn" data-tip="Customer notified with restock ETAs and suggested alternatives"><rect x="424" y="340" width="128" height="52" rx="6" class="n-gray"/><text x="488" y="358" class="fts">Notify available</text><text x="488" y="371" class="fts">ETAs & Suggest</text><text x="488" y="384" class="fts">key Titles</text></g>
-            <g class="fn" data-tip="Out-of-stock flow complete — coupon issued"><ellipse cx="488" cy="442" rx="40" ry="16" class="n-oval"/><text x="488" y="442" class="ft" style="font-weight:700;">END</text></g>
+  <!-- ══════════════ HEADER BAR ══════════════ -->
+  <header class="relative z-40 bg-[#0b1326]/95 backdrop-blur-md border-b-2 border-[#005899] px-4 sm:px-6 py-2 flex items-center justify-between gap-4 flex-shrink-0">
+    <!-- Brand Logo with Blockbuster Angled Motif -->
+    <a href="#" id="brandLogo" class="flex items-center gap-3 group focus:outline-none" title="Rewind to Start">
+      <div class="relative transform -rotate-2 group-hover:rotate-0 transition-transform duration-200">
+        <div class="bg-[#005899] text-[#fecf00] px-3 py-1 border-2 border-[#fecf00] rounded-xs shadow-hard-yellow-sm flex items-center gap-2">
+          <!-- Film Reel SVG -->
+          <svg class="w-5 h-5 text-[#fecf00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+            <line x1="7" y1="2" x2="7" y2="22"/>
+            <line x1="17" y1="2" x2="17" y2="22"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <line x1="2" y1="7" x2="7" y2="7"/>
+            <line x1="2" y1="17" x2="7" y2="17"/>
+            <line x1="17" y1="17" x2="22" y2="17"/>
+            <line x1="17" y1="7" x2="22" y2="7"/>
           </svg>
+          <div class="flex flex-col leading-none">
+            <span class="font-anton text-lg tracking-wider text-[#fecf00]">BLOCKBUSTER</span>
+            <span class="text-[8.5px] font-mono-tech tracking-widest text-white -mt-0.5">DIGITAL VIDEO ®</span>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Presenter -->
-  <div class="flex justify-end flex-shrink-0">
-    <div class="badge flex items-center gap-1.5">
-      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" stroke="#FFD100" stroke-width="2" stroke-linecap="round"/></svg>
-      <span class="y">Jhoan Steven Murillo Garcia</span>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- ═══════════════════ SLIDE 4 · EXPECTED RESULTS ═══════════════════ -->
-<section id="s4" class="slide">
-<div class="px-5 md:px-10 py-5 flex flex-col gap-4 h-full">
-
-  <!-- Header -->
-  <div>
-    <div class="flex items-center gap-2 mb-0.5">
-      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold"
-        style="background:rgba(255,209,0,.13);color:#FFD100;border:1px solid rgba(255,209,0,.28);">4</span>
-      <span class="text-[10px] font-bold tracking-[.18em]" style="color:rgba(255,209,0,.5);">1.1.4 · EXPECTED RESULTS & IMPACT</span>
-    </div>
-    <h2 class="text-[22px] md:text-[28px] font-extrabold tracking-tight text-white">
-      Measurable <span class="y">Business Impact</span>
-    </h2>
-  </div>
-
-  <!-- Impact Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
-    <!-- Speeds Up -->
-    <div class="icard flex flex-col">
-      <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:linear-gradient(135deg,rgba(255,209,0,.14),rgba(255,209,0,.04));border:1px solid rgba(255,209,0,.18);">
-        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#FFD100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="hidden lg:flex flex-col leading-tight ml-1">
+        <span class="text-xs font-anton tracking-wide text-white">TECHNICAL PITCH</span>
+        <span class="text-[9px] font-mono-tech text-[#8da0bd]">SOFTWARE SOLUTION FOR BUSINESS</span>
       </div>
-      <h3 class="text-base font-extrabold y mb-2">Speeds Up</h3>
-      <p class="text-[13px] leading-relaxed flex-1" style="color:rgba(220,220,230,.78);">
-        The system <span class="y font-semibold">speeds up</span> tape return processing, barcode scanning, and instant cloud streaming authorization.
-      </p>
-      <div class="flex gap-1.5 mt-3"><span class="gtag">GRAMMAR: 'speeds up'</span></div>
+    </a>
+
+    <!-- Center Active Slide Badge Indicator -->
+    <div id="slideCounterBadge" class="hidden sm:inline-flex items-center gap-2 px-3 py-1 bg-[#131d33] border border-[#fecf00] rounded-xs shadow-hard-blue-sm font-mono-tech text-xs">
+      <span class="w-2 h-2 rounded-full bg-[#fecf00] animate-ping"></span>
+      <span id="slideTitleIndicator" class="font-bold text-[#fecf00]">TAPE 01 / 04 • COMPANY PROFILE</span>
     </div>
 
-    <!-- Improves -->
-    <div class="icard flex flex-col">
-      <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:linear-gradient(135deg,rgba(96,165,250,.14),rgba(96,165,250,.04));border:1px solid rgba(96,165,250,.18);">
-        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="#60A5FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <!-- Header Controls: Sound FX Toggle, CRT Scanlines Toggle -->
+    <div class="flex items-center gap-2">
+      <!-- CRT Toggle Button -->
+      <button id="crtToggleBtn" class="px-2.5 py-1 bg-[#131d33] hover:bg-[#1a2846] border border-[#2b3a5a] text-[#8da0bd] hover:text-[#fecf00] rounded-xs text-xs font-mono-tech flex items-center gap-1.5 transition-colors" title="Toggle 90s CRT Scanlines">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+        <span class="hidden md:inline">CRT:</span>
+        <span id="crtStatusText" class="text-[#fecf00] font-bold">ON</span>
+      </button>
+
+      <!-- Audio Toggle Button -->
+      <button id="audioToggleBtn" class="px-2.5 py-1 bg-[#131d33] hover:bg-[#1a2846] border border-[#2b3a5a] text-[#8da0bd] hover:text-[#fecf00] rounded-xs text-xs font-mono-tech flex items-center gap-1.5 transition-colors" title="Toggle 90s Retro Audio Effects">
+        <svg id="audioIcon" class="w-3.5 h-3.5 text-[#fecf00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <span class="hidden md:inline">SFX:</span>
+        <span id="audioStatusText" class="text-[#fecf00] font-bold">ON</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════════════ SLIDES VIEWPORT (Bounded between Header & Footer) ══════════════ -->
+  <main class="relative z-10 flex-1 min-h-0 w-full overflow-hidden">
+
+    <!-- ═══════════════════ SLIDE 1 · COMPANY PROFILE ═══════════════════ -->
+    <section id="s1" class="slide active">
+      <div class="max-w-6xl mx-auto px-4 sm:px-8 py-3.5 pb-4 flex flex-col gap-3 min-h-full justify-between">
+
+        <!-- Top Header & Ribbon -->
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="ticket-stub bg-[#005899] text-[#fecf00] font-anton text-xs px-2.5 py-0.5 border border-[#fecf00]">
+              TAPE 01
+            </span>
+            <span class="font-mono-tech text-xs tracking-widest text-[#fecf00] uppercase font-bold">
+              1.1.1 · COMPANY PROFILE
+            </span>
+          </div>
+          <h1 class="font-anton text-2xl sm:text-3xl lg:text-4xl uppercase tracking-wider text-white leading-tight">
+            Technical Pitch: <span class="text-[#fecf00] crt-glow-yellow">Software Solution for Business</span>
+          </h1>
+          <p class="font-body text-xs sm:text-sm text-[#8da0bd] mt-0.5">
+            Blockbuster Digital CIS &amp; Streaming Platform
+          </p>
+        </div>
+
+        <!-- Team & Metadata Receipt Strip -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+          <!-- Team -->
+          <div class="card-retro px-3.5 py-2.5 flex items-center gap-3">
+            <div class="w-7 h-7 rounded bg-[#005899]/40 border border-[#005899] flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-[#60a5fa]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke-linecap="round"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <div class="text-xs">
+              <span class="font-mono-tech text-[#60a5fa] font-bold block uppercase text-[10px] tracking-wider">TEAM</span>
+              <span class="text-white font-medium text-[11.5px]">M. F. Huertas · J. C. Valencia · J. S. Murillo · V. Becerra</span>
+            </div>
+          </div>
+
+          <!-- Software -->
+          <div class="card-retro px-3.5 py-2.5 flex items-center gap-3 border-l-2 border-l-[#fecf00]">
+            <div class="w-7 h-7 rounded bg-[#fecf00]/20 border border-[#fecf00] flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-[#fecf00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4" stroke-linecap="round"/></svg>
+            </div>
+            <div class="text-xs">
+              <span class="font-mono-tech text-[#fecf00] font-bold block uppercase text-[10px] tracking-wider">SOFTWARE</span>
+              <span class="text-white font-bold text-[11.5px]">Blockbuster Digital CIS</span>
+            </div>
+          </div>
+
+          <!-- Target Company -->
+          <div class="card-retro px-3.5 py-2.5 flex items-center gap-3">
+            <div class="w-7 h-7 rounded bg-[#34d399]/20 border border-[#34d399] flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-[#34d399]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14m18-14v14M6 7h12M9 21V10m6 11V10M5 7l7-4 7 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="text-xs">
+              <span class="font-mono-tech text-[#34d399] font-bold block uppercase text-[10px] tracking-wider">TARGET COMPANY</span>
+              <span class="text-white font-medium text-[11.5px]">Blockbuster Video</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Content Cards (VHS Clamshell Styled) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1 min-h-0">
+          <!-- Core Activity Card -->
+          <div class="card-retro p-4 flex flex-col justify-between overflow-hidden">
+            <div class="vhs-sheen absolute inset-0 pointer-events-none opacity-40"></div>
+            <div>
+              <div class="flex items-center justify-between mb-2 border-b border-[#23314d] pb-1.5">
+                <div class="flex items-center gap-2">
+                  <span class="bg-[#fecf00] text-[#001c37] font-anton text-[11px] px-2 py-0.5 rounded-xs">
+                    SECTION A
+                  </span>
+                  <h3 class="font-anton text-base tracking-wider text-[#fecf00] uppercase">Core Activity</h3>
+                </div>
+                <span class="text-[9.5px] font-mono-tech text-[#8da0bd]">AISLE 04 • ENTERTAINMENT</span>
+              </div>
+              <p class="font-body text-xs sm:text-[13.5px] leading-relaxed text-[#dae2fd]">
+                Blockbuster Video is a company located in <strong class="text-white">Dallas, TX</strong> that operates in the <strong class="text-[#fecf00]">Entertainment Technology</strong> and <strong class="text-[#fecf00]">Media Distribution</strong> sector.
+              </p>
+            </div>
+            <div class="mt-3 pt-1.5 border-t border-[#1a2742] flex items-center justify-between text-[10px] font-mono-tech text-[#627799]">
+              <span>HQ: DALLAS, TX, USA</span>
+              <span class="text-[#fecf00]">EST. 1985 • REBOOT 2026</span>
+            </div>
+          </div>
+
+          <!-- Services Offered Card -->
+          <div class="card-retro p-4 flex flex-col justify-between overflow-hidden">
+            <div class="vhs-sheen absolute inset-0 pointer-events-none opacity-40"></div>
+            <div>
+              <div class="flex items-center justify-between mb-2 border-b border-[#23314d] pb-1.5">
+                <div class="flex items-center gap-2">
+                  <span class="bg-[#005899] text-white font-anton text-[11px] px-2 py-0.5 rounded-xs">
+                    SECTION B
+                  </span>
+                  <h3 class="font-anton text-base tracking-wider text-[#60a5fa] uppercase">Services Offered</h3>
+                </div>
+                <span class="text-[9.5px] font-mono-tech text-[#8da0bd]">CATALOG &amp; STREAMING</span>
+              </div>
+              <p class="font-body text-xs sm:text-[13.5px] leading-relaxed text-[#dae2fd]">
+                The company provides <strong class="text-white">physical media rentals</strong>, <strong class="text-white">digital scanning</strong>, and <strong class="text-[#fecf00]">4K cloud streaming</strong> services to film lovers and subscribers worldwide.
+              </p>
+            </div>
+            <div class="mt-3 pt-1.5 border-t border-[#1a2742] flex items-center justify-between text-[10px] font-mono-tech text-[#627799]">
+              <span>FORMAT: VHS / DVD / 4K CLOUD</span>
+              <span class="text-[#60a5fa]">ALL RELEASES IN-STOCK</span>
+            </div>
+          </div>
+
+          <!-- Stakeholder Needs Card (Full Width) -->
+          <div class="card-retro p-4 md:col-span-2 overflow-hidden border-2 border-[#005899]/60">
+            <div class="vhs-sheen absolute inset-0 pointer-events-none opacity-40"></div>
+            <div class="flex items-center justify-between mb-2 border-b border-[#23314d] pb-1.5 flex-wrap gap-2">
+              <div class="flex items-center gap-2">
+                <span class="bg-[#34d399] text-[#001c37] font-anton text-[11px] px-2 py-0.5 rounded-xs">
+                  SECTION C
+                </span>
+                <h3 class="font-anton text-base tracking-wider text-[#34d399] uppercase">Stakeholder Needs</h3>
+              </div>
+              <span class="vtag">VOCAB: Stakeholder Needs Analysis</span>
+            </div>
+            <p class="font-body text-xs sm:text-[13.5px] leading-relaxed text-[#dae2fd]">
+              Aligning <strong class="text-white">legacy rental operations</strong> with modern <strong class="text-[#34d399]">digital subscriber demands</strong> — bridging in-store VHS/DVD services and next-generation 4K cloud streaming experiences for a global audience.
+            </p>
+            <div class="mt-2.5 flex items-center justify-between">
+              <div class="h-2.5 w-32 barcode-pattern rounded-xs opacity-75"></div>
+              <span class="text-[9.5px] font-mono-tech text-[#8da0bd]">TRANSFORMATION ARCHITECTURE v2.0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Presenter Badge Footer -->
+        <div class="flex items-center justify-between pt-1">
+          <div class="text-[10px] font-mono-tech text-[#627799]">
+            BLOCKBUSTER DIGITAL CIS • EXECUTIVE PITCH
+          </div>
+          <div class="vip-card-badge" title="Presenter - Maria Fernanda Huertas Montes">
+            <div class="w-5 h-5 rounded-full bg-[#fecf00] text-[#001c37] flex items-center justify-center font-anton text-xs">
+              01
+            </div>
+            <div class="leading-none text-right">
+              <span class="text-[8.5px] font-mono-tech text-[#8da0bd] uppercase block">PRESENTER / LEAD</span>
+              <span class="font-anton text-xs sm:text-sm tracking-wide text-[#fecf00]">Maria Fernanda Huertas Montes</span>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <h3 class="text-base font-extrabold blu mb-2">Improves</h3>
-      <p class="text-[13px] leading-relaxed flex-1" style="color:rgba(220,220,230,.78);">
-        It <span class="blu font-semibold">improves</span> customer retention, service quality, and Gold Membership rewards.
-      </p>
-      <div class="flex gap-1.5 mt-3"><span class="gtag">GRAMMAR: 'improves'</span></div>
-    </div>
+    </section>
 
-    <!-- Secures -->
-    <div class="icard flex flex-col">
-      <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:linear-gradient(135deg,rgba(52,211,153,.14),rgba(52,211,153,.04));border:1px solid rgba(52,211,153,.18);">
-        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#34D399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <!-- ═══════════════════ SLIDE 2 · PROBLEM STATEMENT ═══════════════════ -->
+    <section id="s2" class="slide">
+      <div class="max-w-6xl mx-auto px-4 sm:px-8 py-3.5 pb-4 flex flex-col gap-3 min-h-full justify-between">
+
+        <!-- Top Header & Ribbon -->
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="ticket-stub bg-[#005899] text-[#fecf00] font-anton text-xs px-2.5 py-0.5 border border-[#fecf00]">
+              TAPE 02
+            </span>
+            <span class="font-mono-tech text-xs tracking-widest text-[#fecf00] uppercase font-bold">
+              1.1.2 · PROBLEM STATEMENT &amp; REQUIREMENTS REFINEMENT
+            </span>
+          </div>
+          <h2 class="font-anton text-2xl sm:text-3xl lg:text-4xl uppercase tracking-wider text-white leading-tight">
+            Identifying the <span class="text-[#fecf00] crt-glow-yellow">Core Challenges</span>
+          </h2>
+          <p class="font-body text-xs sm:text-sm text-[#8da0bd] mt-0.5">
+            Analyzing bottlenecks in physical rental operations &amp; defining software specifications
+          </p>
+        </div>
+
+        <!-- Main Grid: Left Alert Card + Right 3 Requirements -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-3 flex-1 min-h-0">
+
+          <!-- Left 40%: Business Issues Alert Card -->
+          <div class="lg:col-span-2 card-retro-alert p-4 flex flex-col justify-between border-2 border-red-500/50">
+            <div>
+              <div class="flex items-center justify-between mb-2 border-b border-red-500/30 pb-1.5">
+                <div class="flex items-center gap-2">
+                  <span class="bg-[#ef4444] text-white font-anton text-[11px] px-2 py-0.5 rounded-xs animate-pulse">
+                    ALERT
+                  </span>
+                  <h3 class="font-anton text-lg tracking-wider text-[#ef4444] crt-glow-red uppercase">
+                    Business Issues
+                  </h3>
+                </div>
+                <span class="vtag" style="background:rgba(239,68,68,0.2);color:#ef4444;border-color:rgba(239,68,68,0.5);">
+                  ⚠ CRITICAL
+                </span>
+              </div>
+              <p class="font-body text-xs sm:text-[13.5px] leading-relaxed text-[#f0f4ff]">
+                Despite its market presence, the company faces <strong class="text-white underline decoration-[#ef4444] decoration-2">critical operational problems</strong>.
+                For instance, it suffers from <strong class="text-[#ef4444]">inventory tracking delays</strong> and
+                <strong class="text-[#ef4444]">manual tape management errors</strong>.
+              </p>
+            </div>
+
+            <!-- Caution tape sticker & barcode motif -->
+            <div class="mt-3 pt-2 border-t border-red-500/20 flex flex-col gap-1.5">
+              <div class="flex items-center justify-between text-[9.5px] font-mono-tech text-red-300">
+                <span>SEVERITY: HIGH LATENCY</span>
+                <span>STATUS: UNRESOLVED</span>
+              </div>
+              <div class="h-2 w-full barcode-pattern rounded-xs opacity-60"></div>
+            </div>
+          </div>
+
+          <!-- Right 60%: 3 Requirements Refinement Cards -->
+          <div class="lg:col-span-3 flex flex-col gap-2.5">
+
+            <!-- Need 1 -->
+            <div class="card-retro p-3.5 border-l-4 border-l-[#fecf00]">
+              <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="bg-[#fecf00] text-[#001c37] font-anton text-[11px] px-2 py-0.5 rounded-xs">N1</span>
+                  <h4 class="font-anton text-sm sm:text-base tracking-wider text-[#fecf00] uppercase">BOTTLENECK</h4>
+                </div>
+                <div class="flex gap-1.5 flex-wrap">
+                  <span class="gtag">GRAMMAR: 'lacks'</span>
+                  <span class="vtag">Epic</span>
+                  <span class="vtag">User Story</span>
+                  <span class="vtag">Bottleneck</span>
+                </div>
+              </div>
+              <p class="font-body text-xs sm:text-[13px] text-[#dae2fd] leading-relaxed">
+                First, the system <span class="text-[#60a5fa] font-bold font-mono-tech underline">lacks</span> automated <strong class="text-white">inventory &amp; streaming synchronization</strong>.
+              </p>
+            </div>
+
+            <!-- Need 2 -->
+            <div class="card-retro p-3.5 border-l-4 border-l-[#60a5fa]">
+              <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="bg-[#60a5fa] text-[#001c37] font-anton text-[11px] px-2 py-0.5 rounded-xs">N2</span>
+                  <h4 class="font-anton text-sm sm:text-base tracking-wider text-[#60a5fa] uppercase">WORKFLOW</h4>
+                </div>
+                <div class="flex gap-1.5 flex-wrap">
+                  <span class="gtag">GRAMMAR: 'requires'</span>
+                  <span class="vtag">Workflow</span>
+                </div>
+              </div>
+              <p class="font-body text-xs sm:text-[13px] text-[#dae2fd] leading-relaxed">
+                Second, the workflow <span class="text-[#60a5fa] font-bold font-mono-tech underline">requires</span> <strong class="text-white">real-time barcode processing</strong> and digital reservation controls.
+              </p>
+            </div>
+
+            <!-- Need 3 -->
+            <div class="card-retro p-3.5 border-l-4 border-l-[#34d399]">
+              <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="bg-[#34d399] text-[#001c37] font-anton text-[11px] px-2 py-0.5 rounded-xs">N3</span>
+                  <h4 class="font-anton text-sm sm:text-base tracking-wider text-[#34d399] uppercase">CIS ARCHITECTURE</h4>
+                </div>
+                <div class="flex gap-1.5 flex-wrap">
+                  <span class="vtag">CIS</span>
+                  <span class="vtag">Functional Req.</span>
+                  <span class="vtag">Non-Functional Req.</span>
+                </div>
+              </div>
+              <p class="font-body text-xs sm:text-[13px] text-[#dae2fd] leading-relaxed">
+                Finally, the organization <span class="text-[#34d399] font-bold font-mono-tech underline">needs</span> a centralized <strong class="text-[#fecf00]">Customer Information System (CIS)</strong>.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Presenter Badge Footer -->
+        <div class="flex items-center justify-between pt-1">
+          <div class="text-[10px] font-mono-tech text-[#627799]">
+            REQUIREMENTS SPECIFICATION • BLOCKBUSTER VIDEO LABS
+          </div>
+          <div class="vip-card-badge" title="Presenter - Juan Camilo Valencia Rey">
+            <div class="w-5 h-5 rounded-full bg-[#fecf00] text-[#001c37] flex items-center justify-center font-anton text-xs">
+              02
+            </div>
+            <div class="leading-none text-right">
+              <span class="text-[8.5px] font-mono-tech text-[#8da0bd] uppercase block">PRESENTER / SYSTEMS</span>
+              <span class="font-anton text-xs sm:text-sm tracking-wide text-[#fecf00]">Juan Camilo Valencia Rey</span>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <h3 class="text-base font-extrabold grn mb-2">Secures</h3>
-      <p class="text-[13px] leading-relaxed flex-1" style="color:rgba(220,220,230,.78);">
-        It <span class="grn font-semibold">secures</span> transaction records, financial data, and digital preservation archives.
-      </p>
-      <div class="flex gap-1.5 mt-3"><span class="gtag">GRAMMAR: 'secures'</span></div>
+    </section>
+
+    <!-- ═══════════════════ SLIDE 3 · PROPOSED SOLUTION & FLOWCHART ═══════════════════ -->
+    <section id="s3" class="slide">
+      <div class="max-w-6xl mx-auto px-4 sm:px-8 py-3 pb-3 flex flex-col gap-2 min-h-full justify-between">
+
+        <!-- Top Header & Ribbon -->
+        <div>
+          <div class="flex items-center gap-2 mb-0.5">
+            <span class="ticket-stub bg-[#005899] text-[#fecf00] font-anton text-xs px-2.5 py-0.5 border border-[#fecf00]">
+              TAPE 03
+            </span>
+            <span class="font-mono-tech text-xs tracking-widest text-[#fecf00] uppercase font-bold">
+              1.1.3 · PROPOSED SOLUTION &amp; CIS WORKFLOW
+            </span>
+          </div>
+          <h2 class="font-anton text-2xl sm:text-3xl uppercase tracking-wider text-white leading-tight">
+            VIP Rental <span class="text-[#fecf00] crt-glow-yellow">Payment Flow</span>
+          </h2>
+        </div>
+
+        <!-- Asymmetric 2-Col Layout -->
+        <div class="flex flex-col lg:flex-row gap-3 flex-1 min-h-0">
+
+          <!-- Left 35%: Architecture & Key Features -->
+          <div class="w-full lg:w-[35%] flex flex-col gap-1.5 overflow-y-auto pr-1">
+
+            <!-- Software Introduction -->
+            <div class="card-retro p-2.5">
+              <span class="text-[9.5px] font-mono-tech font-bold text-[#fecf00] uppercase tracking-wider block mb-0.5">
+                SOFTWARE INTRODUCTION
+              </span>
+              <p class="font-body text-[11.5px] text-[#dae2fd] leading-relaxed">
+                To address these core needs, we present our software solution: <strong class="text-[#fecf00]">Blockbuster Digital CIS</strong>.
+              </p>
+            </div>
+
+            <!-- CIS Architecture -->
+            <div class="card-retro p-2.5">
+              <span class="text-[9.5px] font-mono-tech font-bold text-[#60a5fa] uppercase tracking-wider block mb-0.5">
+                CIS ARCHITECTURE
+              </span>
+              <p class="font-body text-[11.5px] text-[#dae2fd] leading-relaxed">
+                Our <strong class="text-white">Customer Information System (CIS)</strong> centralizes all operational data. It processes streaming video pipelines, rental cart transactions, and customer profiles in <strong class="text-[#fecf00]">real time</strong>.
+              </p>
+            </div>
+
+            <!-- Key Features Stack -->
+            <div class="flex flex-col gap-1">
+              <span class="text-[9px] font-mono-tech font-bold text-[#fecf00]/70 uppercase tracking-wider">
+                KEY FEATURES
+              </span>
+
+              <!-- Automates -->
+              <div class="fpill-retro">
+                <div class="flex items-start gap-2">
+                  <div class="w-4 h-4 rounded bg-[#fecf00]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-2.5 h-2.5 text-[#fecf00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div>
+                    <h5 class="font-anton text-[11.5px] text-[#fecf00] tracking-wide">Automates</h5>
+                    <p class="text-[10.5px] text-[#8da0bd] leading-tight">
+                      Cart checkout processing and printable receipt ticket generation.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Manages -->
+              <div class="fpill-retro" style="border-left-color: #60a5fa;">
+                <div class="flex items-start gap-2">
+                  <div class="w-4 h-4 rounded bg-[#60a5fa]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-2.5 h-2.5 text-[#60a5fa]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M4 7v10c0 1.1.9 2 2 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H6a2 2 0 00-2 2z" stroke-linecap="round"/></svg>
+                  </div>
+                  <div>
+                    <h5 class="font-anton text-[11.5px] text-[#60a5fa] tracking-wide">Manages</h5>
+                    <p class="text-[10.5px] text-[#8da0bd] leading-tight">
+                      Hybrid physical-cloud catalogs and VIP membership passes.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stores -->
+              <div class="fpill-retro" style="border-left-color: #34d399;">
+                <div class="flex items-start gap-2">
+                  <div class="w-4 h-4 rounded bg-[#34d399]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-2.5 h-2.5 text-[#34d399]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 0v10l6.93 4" stroke-linecap="round"/></svg>
+                  </div>
+                  <div>
+                    <h5 class="font-anton text-[11.5px] text-[#34d399] tracking-wide">Stores</h5>
+                    <p class="text-[10.5px] text-[#8da0bd] leading-tight">
+                      Customer rental history, reward points, and tape availability data.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Why Best Option -->
+            <div class="card-retro p-2 border border-[#fecf00]/40 bg-[#001c37]/60">
+              <span class="text-[9.5px] font-mono-tech font-bold text-[#fecf00] uppercase block">
+                WHY BEST OPTION
+              </span>
+              <p class="font-body text-[10.5px] text-[#dae2fd] leading-tight mt-0.5">
+                This software directly <strong class="text-[#fecf00]">eliminates rental bottlenecks</strong> and optimizes overall team efficiency.
+              </p>
+            </div>
+
+            <!-- Flowchart Legend -->
+            <div class="pt-0.5">
+              <span class="text-[8.5px] font-mono-tech text-[#8da0bd] uppercase tracking-wider block mb-0.5">
+                FLOW LEGEND
+              </span>
+              <div class="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[8.5px] font-mono-tech">
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 rounded-full bg-[#8cc4ff] border border-[#2b7bc4]"></span><span class="text-[#c1c7d2]">Start / End</span></div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 rounded-xs bg-[#ffd86b] border border-[#c99818]"></span><span class="text-[#c1c7d2]">Decision</span></div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 rounded-xs bg-[#ff9fb4] border border-[#c9516c]"></span><span class="text-[#c1c7d2]">Payment</span></div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 rounded-xs bg-[#72e4ab] border border-[#24995f]"></span><span class="text-[#c1c7d2]">Success</span></div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 rounded-xs bg-[#d3d9e2] border border-[#8392a5]"></span><span class="text-[#c1c7d2]">Exception</span></div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-1.5 rounded-xs bg-[#f5f0e8] border border-[#c7bca9]"></span><span class="text-[#c1c7d2]">User Action</span></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right 65%: Retro Blockbuster POS Kiosk CRT Terminal Flowchart -->
+          <div class="flex-1 terminal-bezel flex flex-col overflow-hidden min-h-0">
+            <!-- Terminal Header Bar -->
+            <div class="px-3 py-1.5 bg-[#091122] border-b border-[#005899]/70 flex items-center justify-between flex-shrink-0">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span class="text-[9px] font-mono-tech font-bold text-[#fecf00] tracking-wider uppercase">
+                  BLOCKBUSTER POS KIOSK TERMINAL v1.94 • LIVE CIS DIAGRAM
+                </span>
+              </div>
+              <!-- Zoom Controls with retro sound -->
+              <div class="flex items-center gap-1">
+                <button onclick="zc(.15)" class="w-5 h-5 rounded bg-[#131d33] hover:bg-[#fecf00] text-[#fecf00] hover:text-[#001c37] border border-[#005899] font-anton text-xs transition-colors flex items-center justify-center shadow-xs" title="Zoom In">+</button>
+                <button onclick="zc(-.15)" class="w-5 h-5 rounded bg-[#131d33] hover:bg-[#fecf00] text-[#fecf00] hover:text-[#001c37] border border-[#005899] font-anton text-xs transition-colors flex items-center justify-center shadow-xs" title="Zoom Out">−</button>
+                <button onclick="rc()" class="w-5 h-5 rounded bg-[#131d33] hover:bg-[#fecf00] text-[#fecf00] hover:text-[#001c37] border border-[#005899] font-mono-tech text-[10px] transition-colors flex items-center justify-center shadow-xs" title="Reset Zoom">⟲</button>
+              </div>
+            </div>
+
+            <!-- Terminal Screen / SVG Canvas -->
+            <div class="overflow-auto flex-1 p-2 bg-[#060c18] relative">
+              <div id="cz" style="transform-origin: top center; transition: transform 0.25s ease;">
+                <svg viewBox="0 0 680 1060" width="100%" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <marker id="arrow-marker" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto" fill="#fecf00">
+                      <polygon points="0 0, 9 3.5, 0 7"/>
+                    </marker>
+                    <filter id="nodeGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#fecf00" flood-opacity="0.45"/>
+                    </filter>
+                  </defs>
+
+                  <!-- ── EDGES ── -->
+                  <line x1="265" y1="48"  x2="265" y2="72"  class="fe"/>
+                  <line x1="265" y1="112" x2="265" y2="140" class="fe"/>
+                  <line x1="265" y1="180" x2="265" y2="215" class="fe"/>
+                  <!-- YES -->
+                  <line x1="205" y1="265" x2="168" y2="265" class="fe"/>
+                  <line x1="168" y1="265" x2="168" y2="310" class="fe"/>
+                  <text x="180" y="288" class="fl">YES</text>
+                  <!-- NO -->
+                  <line x1="325" y1="265" x2="488" y2="265" class="fe"/>
+                  <text x="400" y="255" class="fl">NO</text>
+                  <line x1="488" y1="308" x2="488" y2="340" class="fe"/>
+                  <line x1="488" y1="392" x2="488" y2="424" class="fe"/>
+                  <!-- Cart → Pay -->
+                  <line x1="168" y1="356" x2="168" y2="390" class="fe"/>
+                  <!-- Pay → Valid? -->
+                  <line x1="168" y1="440" x2="168" y2="475" class="fe"/>
+                  <!-- YES receipt -->
+                  <line x1="228" y1="525" x2="295" y2="525" class="fe"/>
+                  <line x1="295" y1="525" x2="295" y2="562" class="fe"/>
+                  <text x="258" y="515" class="fl">YES</text>
+                  <!-- NO error -->
+                  <line x1="108" y1="525" x2="58"  y2="525" class="fe"/>
+                  <line x1="58"  y1="525" x2="58"  y2="570" class="fe"/>
+                  <text x="82"  y="515" class="fl">NO</text>
+                  <line x1="58"  y1="618" x2="58"  y2="650" class="fe"/>
+                  <!-- Receipt → Delivery -->
+                  <line x1="295" y1="607" x2="295" y2="640" class="fe"/>
+                  <!-- PHYSICAL -->
+                  <line x1="235" y1="690" x2="140" y2="690" class="fe"/>
+                  <line x1="140" y1="690" x2="140" y2="730" class="fe"/>
+                  <text x="180" y="705" class="fl">PHYSICAL</text>
+                  <!-- STREAMING -->
+                  <line x1="355" y1="690" x2="450" y2="690" class="fe"/>
+                  <line x1="450" y1="690" x2="450" y2="730" class="fe"/>
+                  <text x="400" y="705" class="fl">STREAMING</text>
+                  <!-- Merge → Log -->
+                  <line x1="140" y1="782" x2="140" y2="820" class="fe"/>
+                  <line x1="140" y1="820" x2="295" y2="820" class="fe"/>
+                  <line x1="295" y1="820" x2="295" y2="845" class="fe"/>
+                  <line x1="450" y1="782" x2="450" y2="820" class="fe"/>
+                  <line x1="450" y1="820" x2="296" y2="820" class="fe"/>
+                  <!-- Log → END -->
+                  <line x1="295" y1="910" x2="295" y2="948" class="fe"/>
+
+                  <!-- ── NODES ── -->
+                  <g class="fn" data-tip="Customer journey begins in the Blockbuster CIS terminal"><ellipse cx="265" cy="32" rx="56" ry="18" class="n-oval"/><text x="265" y="32" class="ft" style="font-weight:900;">START</text></g>
+                  <g class="fn" data-tip="Customer opens Blockbuster Digital web or mobile app"><rect x="190" y="74" width="150" height="38" rx="6" class="n-def"/><text x="265" y="88" class="fts">User accesses</text><text x="265" y="101" class="fts">platform</text></g>
+                  <g class="fn" data-tip="Browse and select a title — VHS tape or digital stream"><rect x="185" y="142" width="160" height="38" rx="6" class="n-def"/><text x="265" y="156" class="fts">Selects movie:</text><text x="265" y="169" class="fts">VHS Tape or Digital</text></g>
+                  <g class="fn" data-tip="CIS queries real-time inventory for item availability"><polygon points="265,215 325,265 265,315 205,265" class="n-dia"/><text x="265" y="256" class="fts">Is selected item</text><text x="265" y="268" class="fts">available in real-</text><text x="265" y="280" class="fts">time inventory?</text></g>
+                  <g class="fn" data-tip="Item reserved and added to the customer's rental cart"><rect x="98" y="310" width="140" height="46" rx="6" class="n-pink"/><text x="168" y="329" class="fts">Add product to</text><text x="168" y="342" class="fts">Rental Cart</text></g>
+                  <g class="fn" data-tip="Payment gateway processes transaction; VIP discounts applied automatically"><rect x="98" y="390" width="140" height="50" rx="6" class="n-pink"/><text x="168" y="407" class="fts">Process</text><text x="168" y="419" class="fts">Payment /</text><text x="168" y="431" class="fts">Validate VIP Pass</text></g>
+                  <g class="fn" data-tip="Validates payment method and VIP pass credentials"><polygon points="168,475 228,525 168,575 108,525" class="n-dia"/><text x="168" y="517" class="fts">Is Payment /</text><text x="168" y="530" class="fts">VIP Pass valid?</text></g>
+                  <g class="fn" data-tip="Error displayed; customer prompted for alternative payment method"><rect x="-6" y="570" width="128" height="48" rx="6" class="n-gray"/><text x="58" y="586" class="fts">Display payment</text><text x="58" y="598" class="fts">error &amp; Suggest</text><text x="58" y="610" class="fts">new method</text></g>
+                  <g class="fn" data-tip="Transaction cancelled — customer may retry"><ellipse cx="58" cy="668" rx="40" ry="16" class="n-oval"/><text x="58" y="668" class="ft" style="font-weight:900;">END</text></g>
+                  <g class="fn" data-tip="Digital or printable receipt with VIP discount summary"><rect x="228" y="562" width="134" height="45" rx="6" class="n-grn"/><text x="295" y="580" class="fts">Generate</text><text x="295" y="593" class="fts">printable receipt</text></g>
+                  <g class="fn" data-tip="Customer chooses physical tape delivery or 4K cloud streaming"><polygon points="295,640 355,690 295,740 235,690" class="n-dia"/><text x="295" y="681" class="fts">Selects:</text><text x="295" y="693" class="fts">Streaming or</text><text x="295" y="705" class="fts">Physical Tape?</text></g>
+                  <g class="fn" data-tip="Unique barcode generated for dispatch tracking or in-store pickup"><rect x="68" y="730" width="144" height="52" rx="6" class="n-grn"/><text x="140" y="748" class="fts">Assign unique</text><text x="140" y="761" class="fts">barcode for</text><text x="140" y="774" class="fts">dispatch / Store pickup</text></g>
+                  <g class="fn" data-tip="4K cloud streaming CDN pipeline activated for instant playback"><rect x="384" y="730" width="132" height="52" rx="6" class="n-grn"/><text x="450" y="748" class="fts">Enable 4K Cloud</text><text x="450" y="761" class="fts">Streaming CDN</text><text x="450" y="774" class="fts">Pipeline</text></g>
+                  <g class="fn" data-tip="Full transaction logged in CIS; Gold Membership loyalty points awarded"><rect x="220" y="845" width="150" height="65" rx="6" class="n-grn"/><text x="295" y="862" class="fts">Log transaction</text><text x="295" y="875" class="fts">in CIS &amp; grant</text><text x="295" y="888" class="fts" style="font-weight:800;fill:#00325a;">Gold Membership</text><text x="295" y="901" class="fts">points</text></g>
+                  <g class="fn" data-tip="Transaction complete — rental fulfilled successfully!"><ellipse cx="295" cy="966" rx="48" ry="18" class="n-oval"/><text x="295" y="966" class="ft" style="font-weight:900;">END</text></g>
+                  <!-- Right Out-Of-Stock Branch -->
+                  <g class="fn" data-tip="Out-of-stock: CIS auto-issues a free rental coupon"><rect x="424" y="244" width="128" height="64" rx="6" class="n-gray"/><text x="488" y="262" class="fts">Apply Stock</text><text x="488" y="274" class="fts">Guarantee:</text><text x="488" y="286" class="fts">Issue free</text><text x="488" y="298" class="fts">rental coupon</text></g>
+                  <g class="fn" data-tip="Customer notified with restock ETAs and suggested alternatives"><rect x="424" y="340" width="128" height="52" rx="6" class="n-gray"/><text x="488" y="358" class="fts">Notify available</text><text x="488" y="371" class="fts">ETAs &amp; Suggest</text><text x="488" y="384" class="fts">key Titles</text></g>
+                  <g class="fn" data-tip="Out-of-stock flow complete — coupon issued"><ellipse cx="488" cy="442" rx="40" ry="16" class="n-oval"/><text x="488" y="442" class="ft" style="font-weight:900;">END</text></g>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Presenter Badge Footer -->
+        <div class="flex items-center justify-between pt-1">
+          <div class="text-[10px] font-mono-tech text-[#627799]">
+            SOFTWARE SPECIFICATION &amp; REAL-TIME TRANSACTION ENGINE
+          </div>
+          <div class="vip-card-badge" title="Presenter - Jhoan Steven Murillo Garcia">
+            <div class="w-5 h-5 rounded-full bg-[#fecf00] text-[#001c37] flex items-center justify-center font-anton text-xs">
+              03
+            </div>
+            <div class="leading-none text-right">
+              <span class="text-[8.5px] font-mono-tech text-[#8da0bd] uppercase block">PRESENTER / ARCHITECT</span>
+              <span class="font-anton text-xs sm:text-sm tracking-wide text-[#fecf00]">Jhoan Steven Murillo Garcia</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SLIDE 4 · EXPECTED RESULTS ═══════════════════ -->
+    <section id="s4" class="slide">
+      <div class="max-w-6xl mx-auto px-4 sm:px-8 py-3.5 pb-4 flex flex-col gap-3 min-h-full justify-between">
+
+        <!-- Top Header & Ribbon -->
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="ticket-stub bg-[#005899] text-[#fecf00] font-anton text-xs px-2.5 py-0.5 border border-[#fecf00]">
+              TAPE 04
+            </span>
+            <span class="font-mono-tech text-xs tracking-widest text-[#fecf00] uppercase font-bold">
+              1.1.4 · EXPECTED RESULTS &amp; IMPACT
+            </span>
+          </div>
+          <h2 class="font-anton text-2xl sm:text-3xl lg:text-4xl uppercase tracking-wider text-white leading-tight">
+            Measurable <span class="text-[#fecf00] crt-glow-yellow">Business Impact</span>
+          </h2>
+          <p class="font-body text-xs sm:text-sm text-[#8da0bd] mt-0.5">
+            Quantified operational advantages and client value proposition
+          </p>
+        </div>
+
+        <!-- 3 Impact Cards Styled as VIP Rental Rewards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1 min-h-0">
+
+          <!-- Speeds Up -->
+          <div class="icard-retro flex flex-col justify-between border-t-4 border-t-[#fecf00]">
+            <div>
+              <div class="w-10 h-10 rounded bg-[#fecf00]/20 border border-[#fecf00] flex items-center justify-center mb-2.5">
+                <svg class="w-5 h-5 text-[#fecf00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <h3 class="font-anton text-xl uppercase tracking-wider text-[#fecf00] mb-1.5 crt-glow-yellow">
+                Speeds Up
+              </h3>
+              <p class="font-body text-xs sm:text-[13px] leading-relaxed text-[#dae2fd]">
+                The system <strong class="text-[#fecf00] underline font-bold">speeds up</strong> tape return processing, barcode scanning, and instant cloud streaming authorization.
+              </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-[#23314d] flex items-center justify-between">
+              <span class="gtag">GRAMMAR: 'speeds up'</span>
+              <span class="text-[9.5px] font-mono-tech text-[#fecf00]">KPI: +85% SPEED</span>
+            </div>
+          </div>
+
+          <!-- Improves -->
+          <div class="icard-retro flex flex-col justify-between border-t-4 border-t-[#60a5fa]">
+            <div>
+              <div class="w-10 h-10 rounded bg-[#60a5fa]/20 border border-[#60a5fa] flex items-center justify-center mb-2.5">
+                <svg class="w-5 h-5 text-[#60a5fa]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <h3 class="font-anton text-xl uppercase tracking-wider text-[#60a5fa] mb-1.5 crt-glow">
+                Improves
+              </h3>
+              <p class="font-body text-xs sm:text-[13px] leading-relaxed text-[#dae2fd]">
+                It <strong class="text-[#60a5fa] underline font-bold">improves</strong> customer retention, service quality, and Gold Membership rewards.
+              </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-[#23314d] flex items-center justify-between">
+              <span class="gtag">GRAMMAR: 'improves'</span>
+              <span class="text-[9.5px] font-mono-tech text-[#60a5fa]">KPI: +40% RETENTION</span>
+            </div>
+          </div>
+
+          <!-- Secures -->
+          <div class="icard-retro flex flex-col justify-between border-t-4 border-t-[#34d399]">
+            <div>
+              <div class="w-10 h-10 rounded bg-[#34d399]/20 border border-[#34d399] flex items-center justify-center mb-2.5">
+                <svg class="w-5 h-5 text-[#34d399]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <h3 class="font-anton text-xl uppercase tracking-wider text-[#34d399] mb-1.5">
+                Secures
+              </h3>
+              <p class="font-body text-xs sm:text-[13px] leading-relaxed text-[#dae2fd]">
+                It <strong class="text-[#34d399] underline font-bold">secures</strong> transaction records, financial data, and digital preservation archives.
+              </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-[#23314d] flex items-center justify-between">
+              <span class="gtag">GRAMMAR: 'secures'</span>
+              <span class="text-[9.5px] font-mono-tech text-[#34d399]">KPI: 99.9% UPTIME</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Closing Marquee Banner -->
+        <div class="ticket-stub-lg bg-[#005899] border-2 border-[#fecf00] p-3 sm:p-4 shadow-hard-yellow">
+          <p class="font-body text-xs sm:text-sm text-center leading-relaxed text-white">
+            <span class="font-anton text-xl text-[#fecf00] mr-1">“</span>In conclusion, our software provides the <strong class="text-[#fecf00]">reliable infrastructure</strong> required to keep the company <strong class="text-[#fecf00]">competitive</strong> and <strong class="text-[#fecf00]">profitable</strong>. Thank you for your attention!<span class="font-anton text-xl text-[#fecf00] ml-1">”</span>
+          </p>
+        </div>
+
+        <!-- Team Footer + Presenter Badge (Cleanly unblocked, always visible!) -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+          <div class="flex items-center gap-2 text-[10.5px] font-mono-tech text-[#8da0bd] flex-wrap">
+            <span class="font-bold text-[#fecf00] tracking-wider uppercase">DEVELOPMENT TEAM:</span>
+            <span>Maria Fernanda Huertas Montes</span>
+            <span class="text-[#fecf00]">·</span>
+            <span>Juan Camilo Valencia Rey</span>
+            <span class="text-[#fecf00]">·</span>
+            <span>Jhoan Steven Murillo Garcia</span>
+            <span class="text-[#fecf00]">·</span>
+            <span>Valeria Becerra Giraldo</span>
+          </div>
+          <div class="vip-card-badge" title="Presenter - Valeria Becerra Giraldo">
+            <div class="w-5 h-5 rounded-full bg-[#fecf00] text-[#001c37] flex items-center justify-center font-anton text-xs">
+              04
+            </div>
+            <div class="leading-none text-right">
+              <span class="text-[8.5px] font-mono-tech text-[#8da0bd] uppercase block">PRESENTER / QA</span>
+              <span class="font-anton text-xs sm:text-sm tracking-wide text-[#fecf00]">Valeria Becerra Giraldo</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════ BOTTOM VCR NAVIGATION DOCK (Docked cleanly below main, never overlapping content!) ══════════════ -->
+  <footer class="relative z-40 bg-[#0b1326]/95 backdrop-blur-md border-t-2 border-[#005899] px-4 sm:px-8 py-2 flex items-center justify-between gap-4 flex-shrink-0 shadow-lg">
+    <!-- PREV / REWIND BUTTON -->
+    <button id="bp" class="vcr-btn" onclick="prev()" disabled title="Go to previous tape slide (Left Arrow)">
+      <span>◄◄</span>
+      <span>REWIND</span>
+    </button>
+
+    <!-- CENTER TAPE TRACK CHANNELS -->
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <button class="track-btn active" onclick="go(0)" title="Tape 1: Company Profile">
+        <span>01</span>
+        <span class="hidden md:inline">PROFILE</span>
+      </button>
+      <button class="track-btn" onclick="go(1)" title="Tape 2: Problem Statement">
+        <span>02</span>
+        <span class="hidden md:inline">CHALLENGES</span>
+      </button>
+      <button class="track-btn" onclick="go(2)" title="Tape 3: VIP CIS Flow">
+        <span>03</span>
+        <span class="hidden md:inline">CIS FLOW</span>
+      </button>
+      <button class="track-btn" onclick="go(3)" title="Tape 4: Expected Results">
+        <span>04</span>
+        <span class="hidden md:inline">IMPACT</span>
+      </button>
     </div>
-  </div>
 
-  <!-- Closing Banner -->
-  <div class="rounded-xl p-5" style="background:linear-gradient(135deg,rgba(255,209,0,.08),rgba(255,209,0,.02));border:1px solid rgba(255,209,0,.18);">
-    <p class="text-[13px] md:text-[14px] text-center leading-relaxed" style="color:rgba(235,235,240,.82);">
-      <span class="y font-bold">"</span>In conclusion, our software provides the <span class="text-white font-semibold">reliable infrastructure</span> required to keep the company <span class="y font-bold">competitive</span> and <span class="y font-bold">profitable</span>. Thank you for your attention!<span class="y font-bold">"</span>
-    </p>
-  </div>
+    <!-- NEXT / FAST FWD BUTTON -->
+    <button id="bn" class="vcr-btn" onclick="next()" title="Go to next tape slide (Right Arrow or Space)">
+      <span>FAST FWD</span>
+      <span>►►</span>
+    </button>
+  </footer>
 
-  <!-- Team Footer + Presenter -->
-  <div class="flex flex-col md:flex-row items-center justify-between gap-3">
-    <div class="flex items-center gap-2 text-[11px] flex-wrap" style="color:rgba(180,180,195,.45);">
-      <span class="tracking-widest font-semibold">DEVELOPMENT TEAM</span>
-      <span style="color:rgba(255,209,0,.25);">|</span>
-      <span style="color:rgba(220,220,230,.6);">Maria Fernanda Huertas Montes</span>
-      <span style="color:rgba(255,209,0,.18);">·</span>
-      <span style="color:rgba(220,220,230,.6);">Juan Camilo Valencia Rey</span>
-      <span style="color:rgba(255,209,0,.18);">·</span>
-      <span style="color:rgba(220,220,230,.6);">Jhoan Steven Murillo Garcia</span>
-      <span style="color:rgba(255,209,0,.18);">·</span>
-      <span style="color:rgba(220,220,230,.6);">Valeria Becerra Giraldo</span>
-    </div>
-    <div class="badge flex items-center gap-1.5">
-      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" stroke="#FFD100" stroke-width="2" stroke-linecap="round"/></svg>
-      <span class="y">Valeria Becerra Giraldo</span>
-    </div>
-  </div>
-</div>
-</section>
+  <!-- Receipt Tooltip for Flowchart -->
+  <div id="tip"></div>
 
-</main>
+  <!-- ══════════════ RETRO AUDIO ENGINE & APP LOGIC ══════════════ -->
+  <script>
+    // ─── Web Audio API Retro Sound Effects Synthesizer (Zero external dependencies) ───
+    class RetroSoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.isMuted = false;
+      }
 
-<!-- ══════════════ BOTTOM NAV ══════════════ -->
-<nav class="fixed bottom-0 inset-x-0 z-40 flex items-center justify-between px-5 py-2.5"
-  style="background:linear-gradient(0deg,#0A0E1A 65%,transparent);">
-  <button id="bp" class="nbtn" onclick="prev()" disabled>← PREV</button>
-  <div class="flex items-center gap-2">
-    <div class="dot on" onclick="go(0)"></div>
-    <div class="dot" onclick="go(1)"></div>
-    <div class="dot" onclick="go(2)"></div>
-    <div class="dot" onclick="go(3)"></div>
-  </div>
-  <button id="bn" class="nbtn" onclick="next()">NEXT →</button>
-</nav>
+      getContext() {
+        if (this.isMuted) return null;
+        try {
+          if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioCtx();
+          }
+          if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+          }
+          return this.ctx;
+        } catch (e) {
+          return null;
+        }
+      }
 
-<!-- Tooltip -->
-<div id="tip"></div>
+      // Barcode / Scanner high-pitch beep
+      playScanBeep() {
+        const ctx = this.getContext();
+        if (!ctx) return;
+        try {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1760, ctx.currentTime);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.08);
+        } catch(e) {}
+      }
 
-<script>
-  // ─── Slide Navigation ───
-  let cur=0; const N=4;
-  const sl=document.querySelectorAll('.slide'),
-        dt=document.querySelectorAll('.dot'),
-        bp=document.getElementById('bp'),
-        bn=document.getElementById('bn'),
-        id=document.getElementById('ind');
+      // Mechanical relay / button clack
+      playButtonClick() {
+        const ctx = this.getContext();
+        if (!ctx) return;
+        try {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.05);
+          gain.gain.setValueAtTime(0.06, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.05);
+        } catch(e) {}
+      }
 
-  function go(i){
-    if(i<0||i>=N||i===cur) return;
-    const d=i>cur?1:-1;
-    sl[cur].classList.remove('active');
-    sl[cur].style.transform=d>0?'translateX(-50px)':'translateX(50px)';
-    sl[cur].style.opacity='0'; sl[cur].style.pointerEvents='none';
-    cur=i;
-    sl[cur].style.transform=d>0?'translateX(50px)':'translateX(-50px)';
-    sl[cur].style.opacity='0';
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      sl[cur].classList.add('active');
-      sl[cur].style.transform='translateX(0)'; sl[cur].style.opacity='1'; sl[cur].style.pointerEvents='auto';
-    }));
-    dt.forEach((d,j)=>d.classList.toggle('on',j===cur));
-    bp.disabled=cur===0; bn.disabled=cur===N-1;
-    id.textContent=`SLIDE ${cur+1} / ${N}`;
-  }
-  function next(){go(cur+1)} function prev(){go(cur-1)}
-  document.addEventListener('keydown',e=>{
-    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next()}
-    if(e.key==='ArrowLeft'){e.preventDefault();prev()}
-  });
+      // VHS Rewind whir sound
+      playRewindSound() {
+        const ctx = this.getContext();
+        if (!ctx) return;
+        try {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(120, ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(850, ctx.currentTime + 0.35);
+          osc.frequency.linearRampToValueAtTime(300, ctx.currentTime + 0.7);
+          gain.gain.setValueAtTime(0.04, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.25);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.75);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.75);
+        } catch(e) {}
+      }
 
-  // ─── Flowchart Zoom ───
-  let cs=1; const cz=document.getElementById('cz');
-  function zc(d){cs=Math.max(.5,Math.min(2,cs+d));cz.style.transform=`scale(${cs})`}
-  function rc(){cs=1;cz.style.transform='scale(1)'}
+      // VHS Cassette insert clunk
+      playVhsInsert() {
+        const ctx = this.getContext();
+        if (!ctx) return;
+        try {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(150, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 0.16);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.16);
+        } catch(e) {}
+      }
+    }
 
-  // ─── Tooltip ───
-  const tp=document.getElementById('tip');
-  document.querySelectorAll('.fn').forEach(n=>{
-    const t=n.getAttribute('data-tip'); if(!t) return;
-    n.addEventListener('mouseenter',()=>{tp.textContent=t;tp.classList.add('v');});
-    n.addEventListener('mousemove',e=>{tp.style.left=(e.clientX+14)+'px';tp.style.top=(e.clientY-28)+'px';});
-    n.addEventListener('mouseleave',()=>{tp.classList.remove('v');});
-  });
-</script>
+    const sound = new RetroSoundEngine();
+
+    // ─── Header Controls (Sound & CRT Toggles) ───
+    const crtOverlay = document.getElementById('crtOverlay');
+    const crtToggleBtn = document.getElementById('crtToggleBtn');
+    const crtStatusText = document.getElementById('crtStatusText');
+    let crtEnabled = true;
+
+    crtToggleBtn.addEventListener('click', () => {
+      sound.playButtonClick();
+      crtEnabled = !crtEnabled;
+      crtOverlay.classList.toggle('hidden-crt', !crtEnabled);
+      crtStatusText.textContent = crtEnabled ? 'ON' : 'OFF';
+      crtStatusText.style.color = crtEnabled ? '#fecf00' : '#8da0bd';
+    });
+
+    const audioToggleBtn = document.getElementById('audioToggleBtn');
+    const audioStatusText = document.getElementById('audioStatusText');
+    const audioIcon = document.getElementById('audioIcon');
+
+    audioToggleBtn.addEventListener('click', () => {
+      sound.isMuted = !sound.isMuted;
+      audioStatusText.textContent = sound.isMuted ? 'OFF' : 'ON';
+      audioStatusText.style.color = sound.isMuted ? '#8da0bd' : '#fecf00';
+      if (!sound.isMuted) {
+        sound.playButtonClick();
+      }
+    });
+
+    // ─── Logo Click Rewinds to Start ───
+    document.getElementById('brandLogo').addEventListener('click', (e) => {
+      e.preventDefault();
+      sound.playRewindSound();
+      go(0);
+    });
+
+    // ─── Slide Deck Navigation ───
+    let cur = 0;
+    const N = 4;
+    const slideTitles = [
+      'TAPE 01 / 04 • COMPANY PROFILE',
+      'TAPE 02 / 04 • PROBLEM STATEMENT',
+      'TAPE 03 / 04 • VIP CIS FLOW',
+      'TAPE 04 / 04 • EXPECTED RESULTS'
+    ];
+
+    const sl = document.querySelectorAll('.slide');
+    const trackBtns = document.querySelectorAll('.track-btn');
+    const bp = document.getElementById('bp');
+    const bn = document.getElementById('bn');
+    const slideTitleIndicator = document.getElementById('slideTitleIndicator');
+
+    function go(i) {
+      if (i < 0 || i >= N || i === cur) return;
+      const d = i > cur ? 1 : -1;
+      
+      if (d < 0) {
+        sound.playRewindSound();
+      } else {
+        sound.playVhsInsert();
+      }
+
+      sl[cur].classList.remove('active');
+      sl[cur].style.transform = d > 0 ? 'translateX(-60px) scale(0.985)' : 'translateX(60px) scale(0.985)';
+      sl[cur].style.opacity = '0';
+      sl[cur].style.pointerEvents = 'none';
+
+      cur = i;
+      sl[cur].style.transform = d > 0 ? 'translateX(60px) scale(0.985)' : 'translateX(-60px) scale(0.985)';
+      sl[cur].style.opacity = '0';
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          sl[cur].classList.add('active');
+          sl[cur].style.transform = 'translateX(0) scale(1)';
+          sl[cur].style.opacity = '1';
+          sl[cur].style.pointerEvents = 'auto';
+        });
+      });
+
+      trackBtns.forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === cur);
+      });
+
+      bp.disabled = cur === 0;
+      bn.disabled = cur === N - 1;
+
+      if (slideTitleIndicator) {
+        slideTitleIndicator.textContent = slideTitles[cur];
+      }
+    }
+
+    function next() { go(cur + 1); }
+    function prev() { go(cur - 1); }
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        next();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prev();
+      }
+    });
+
+    // ─── Flowchart Zoom Controls ───
+    let cs = 1;
+    const cz = document.getElementById('cz');
+    function zc(delta) {
+      sound.playButtonClick();
+      cs = Math.max(0.5, Math.min(2.2, cs + delta));
+      cz.style.transform = `scale(${cs})`;
+    }
+    function rc() {
+      sound.playButtonClick();
+      cs = 1;
+      cz.style.transform = 'scale(1)';
+    }
+
+    // ─── Flowchart Interactive Nodes & Tooltip ───
+    const tp = document.getElementById('tip');
+    document.querySelectorAll('.fn').forEach(node => {
+      const tipText = node.getAttribute('data-tip');
+      if (!tipText) return;
+
+      node.addEventListener('mouseenter', () => {
+        sound.playScanBeep();
+        tp.innerHTML = `<span style="color:#fecf00;font-weight:700;letter-spacing:0.04em;">[CIS SCAN]</span><br>${tipText}`;
+        tp.classList.add('v');
+      });
+
+      node.addEventListener('mousemove', (e) => {
+        tp.style.left = (e.clientX + 16) + 'px';
+        tp.style.top = (e.clientY - 30) + 'px';
+      });
+
+      node.addEventListener('mouseleave', () => {
+        tp.classList.remove('v');
+      });
+    });
+
+    // Add audio clicks to interactive cards
+    document.querySelectorAll('.card-retro, .card-retro-alert, .fpill-retro, .icard-retro, .vip-card-badge').forEach(item => {
+      item.addEventListener('click', () => {
+        sound.playButtonClick();
+      });
+    });
+  </script>
 </body>
 </html>
